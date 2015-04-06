@@ -1,0 +1,17 @@
+E:\new work\lfglnet\lfglnet\bin\Release\lfglnet.exe
+E:\new work\lfglnet\lfglnet\bin\Release\lfglnet.pdb
+E:\new work\lfglnet\lfglnet\bin\Release\ctbtn.dll
+E:\new work\lfglnet\lfglnet\bin\Release\imgbtn.dll
+E:\new work\lfglnet\lfglnet\bin\Release\seqstate.dll
+E:\new work\lfglnet\lfglnet\bin\Release\ctbtn.pdb
+E:\new work\lfglnet\lfglnet\bin\Release\imgbtn.pdb
+E:\new work\lfglnet\lfglnet\bin\Release\seqstate.pdb
+E:\new work\lfglnet\lfglnet\obj\x86\Release\ResolveAssemblyReference.cache
+E:\new work\lfglnet\lfglnet\obj\x86\Release\lfglnet.Form1.resources
+E:\new work\lfglnet\lfglnet\obj\x86\Release\lfglnet.Form_mb.resources
+E:\new work\lfglnet\lfglnet\obj\x86\Release\lfglnet.Form3.resources
+E:\new work\lfglnet\lfglnet\obj\x86\Release\lfglnet.Properties.Resources.resources
+E:\new work\lfglnet\lfglnet\obj\x86\Release\GenerateResource.read.1.tlog
+E:\new work\lfglnet\lfglnet\obj\x86\Release\GenerateResource.write.1.tlog
+E:\new work\lfglnet\lfglnet\obj\x86\Release\lfglnet.exe
+E:\new work\lfglnet\lfglnet\obj\x86\Release\lfglnet.pdb

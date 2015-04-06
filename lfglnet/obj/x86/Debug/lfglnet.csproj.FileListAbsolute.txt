@@ -1,0 +1,43 @@
+c:\documents and settings\administrator\my documents\visual studio 2010\Projects\lfglnet\lfglnet\bin\Debug\lfglnet.exe
+c:\documents and settings\administrator\my documents\visual studio 2010\Projects\lfglnet\lfglnet\bin\Debug\lfglnet.pdb
+c:\documents and settings\administrator\my documents\visual studio 2010\Projects\lfglnet\lfglnet\obj\x86\Debug\ResolveAssemblyReference.cache
+c:\documents and settings\administrator\my documents\visual studio 2010\Projects\lfglnet\lfglnet\obj\x86\Debug\lfglnet.Properties.Resources.resources
+c:\documents and settings\administrator\my documents\visual studio 2010\Projects\lfglnet\lfglnet\obj\x86\Debug\GenerateResource.read.1.tlog
+c:\documents and settings\administrator\my documents\visual studio 2010\Projects\lfglnet\lfglnet\obj\x86\Debug\GenerateResource.write.1.tlog
+c:\documents and settings\administrator\my documents\visual studio 2010\Projects\lfglnet\lfglnet\obj\x86\Debug\lfglnet.exe
+c:\documents and settings\administrator\my documents\visual studio 2010\Projects\lfglnet\lfglnet\obj\x86\Debug\lfglnet.pdb
+c:\documents and settings\administrator\my documents\visual studio 2010\Projects\lfglnet\lfglnet\obj\x86\Debug\lfglnet.Form1.resources
+C:\Documents and Settings\Administrator\my documents\visual studio 2010\Projects\lfglnet\lfglnet\bin\Debug\imgbtn.dll
+C:\Documents and Settings\Administrator\my documents\visual studio 2010\Projects\lfglnet\lfglnet\bin\Debug\imgbtn.pdb
+C:\Documents and Settings\Administrator\my documents\visual studio 2010\Projects\lfglnet\lfglnet\bin\Debug\ctbtn.pdb
+C:\Documents and Settings\Administrator\my documents\visual studio 2010\Projects\lfglnet\lfglnet\obj\x86\Debug\lfglnet.Form_mb.resources
+C:\Documents and Settings\Administrator\my documents\visual studio 2010\Projects\lfglnet\lfglnet\obj\x86\Debug\lfglnet.Form3.resources
+E:\new work\lfglnet\lfglnet\obj\x86\Debug\lfglnet.exe
+E:\new work\lfglnet\lfglnet\obj\x86\Debug\lfglnet.pdb
+E:\new work\lfglnet\lfglnet\bin\Debug\lfglnet.exe
+E:\new work\lfglnet\lfglnet\bin\Debug\ctbtn.dll
+E:\new work\lfglnet\lfglnet\bin\Debug\imgbtn.dll
+E:\new work\lfglnet\lfglnet\bin\Debug\ctbtn.pdb
+E:\new work\lfglnet\lfglnet\bin\Debug\imgbtn.pdb
+E:\new work\lfglnet\lfglnet\obj\x86\Debug\ResolveAssemblyReference.cache
+E:\new work\lfglnet\lfglnet\obj\x86\Debug\lfglnet.Form1.resources
+E:\new work\lfglnet\lfglnet\obj\x86\Debug\lfglnet.Form_mb.resources
+E:\new work\lfglnet\lfglnet\obj\x86\Debug\lfglnet.Form3.resources
+E:\new work\lfglnet\lfglnet\obj\x86\Debug\lfglnet.Properties.Resources.resources
+E:\new work\lfglnet\lfglnet\obj\x86\Debug\GenerateResource.read.1.tlog
+E:\new work\lfglnet\lfglnet\obj\x86\Debug\GenerateResource.write.1.tlog
+E:\new work\lfglnet\lfglnet\bin\Debug\lfglnet.pdb
+E:\new work\lfglnet\lfglnet\bin\Debug\seqstate.dll
+E:\new work\lfglnet\lfglnet\bin\Debug\seqstate.pdb
+F:\My Files\web\lfglnet\lfglnet\obj\x86\Debug\lfglnet.exe
+F:\My Files\web\lfglnet\lfglnet\obj\x86\Debug\lfglnet.pdb
+F:\My Files\web\lfglnet\lfglnet\bin\Debug\lfglnet.exe
+F:\My Files\web\lfglnet\lfglnet\bin\Debug\lfglnet.pdb
+F:\My Files\web\lfglnet\lfglnet\bin\Debug\imgbutton.dll
+F:\My Files\web\lfglnet\lfglnet\bin\Debug\imgbutton.pdb
+F:\My Files\web\lfglnet\lfglnet\obj\x86\Debug\lfglnet.csprojResolveAssemblyReference.cache
+F:\My Files\web\lfglnet\lfglnet\obj\x86\Debug\lfglnet.Form1.resources
+F:\My Files\web\lfglnet\lfglnet\obj\x86\Debug\lfglnet.Form_mb.resources
+F:\My Files\web\lfglnet\lfglnet\obj\x86\Debug\lfglnet.Form3.resources
+F:\My Files\web\lfglnet\lfglnet\obj\x86\Debug\lfglnet.Properties.Resources.resources
+F:\My Files\web\lfglnet\lfglnet\obj\x86\Debug\lfglnet.csproj.GenerateResource.Cache
