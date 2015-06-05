@@ -19,12 +19,14 @@ using System.Data.OleDb;
 using imgbutton;
 using System.IO;
 
+
 namespace lfglnet
 {
 
 
     public partial class Form1 : Form
     {
+        List<TEQinfo> eqinfos = new List<TEQinfo>();
         List<Tsqluser> sqluser = new List<Tsqluser>();
         List<Tsqlitem> sqlitem = new List<Tsqlitem>();
         List<String> sendstr = new List<String>();
@@ -37,12 +39,24 @@ namespace lfglnet
         public System.Net.Sockets.Socket addclient;
         Int32 listenport;
         public delegate void MyInvoke(string s);
+
+        [DllImport("Kernel32.dll")]
+        public static extern bool RtlMoveMemory(ref AnvizNew.CLOCKINGRECORD Destination, int Source, int Length);
+        [DllImport("Kernel32.dll")]
+        public static extern bool RtlMoveMemory(ref AnvizNew.PERSONINFO Destination, int Source, int Length);
+        [DllImport("Kernel32.dll")]
+        public static extern bool RtlMoveMemory(ref AnvizNew.PERSONINFOEX Destination, int Source, int Length);
+        [DllImport("Kernel32.dll")]
+        public static extern bool RtlMoveMemory(ref int Destination, int Source, int Length);
+
+        [DllImport("Kernel32.dll")]
+        public static extern bool RtlMoveMemory(byte[] Destination, int Source, int Length);
+        [DllImport("Kernel32.dll")]
+        public static extern void GetLocalTime(ref AnvizNew.SYSTEMTIME lpSystemTime);
         [DllImport("user32.dll")] //需添加using System.Runtime.InteropServices;         
         public static extern bool ReleaseCapture();
         [DllImport("user32.dll")]
         public static extern bool SendMessage(IntPtr hwnd, int wMsg, int wParam, int lParam);
-
-        Form3 frm3;
 
         public const int WM_SYSCOMMAND = 0x0112;
         public const int SC_MOVE = 0xF010;
@@ -55,34 +69,42 @@ namespace lfglnet
         public string[] fhstr = new string[5];
         Boolean thclient = true;
 
-        private delegate void Updatelogoeq(tctbtn tb,Boolean bl);
+        private delegate void Updatelogoeq(tctbtn tb, Boolean bl);
         private delegate void Update2(String str);
 
         public Form1()
         {
             InitializeComponent();
             sendstr.Clear();
-        
+
+        }
+
+        private void tctbtn_UserControlBtnDoubleClicked(object sender, EventArgs e)
+        {
+            tctbtn tb = (tctbtn)sender;
+            Form3 frm3 = new Form3(tb.Name.Substring(tb.Name.IndexOf('_') + 1, tb.Name.Length - tb.Name.IndexOf('_') - 1));
+            frm3.Show();
+            
         }
 
         private delegate void _SafeCall(bool bl);
         private delegate void _SafereCall();
 
-        private void Updatecon_1(tctbtn tb,Boolean bl)
+        private void Updatecon_1(tctbtn tb, Boolean bl)
         {
-            if(bl)
-            panel_con1.Controls.Add(tb);
+            if (bl)
+                panel_con1.Controls.Add(tb);
             else
                 panel_con1.Controls.Remove(tb);
         }
 
         public void Updatecon_2(String str)
         {
-            listBox1.Items.Add(DateTime.Now.ToString()+":"+str);
+            listBox1.Items.Add(DateTime.Now.ToString() + " " + str);
 
 
         }
-       
+
         public void Updatecon_3()
         {
             panel_con3.Controls.Clear();
@@ -94,7 +116,7 @@ namespace lfglnet
                 tctbtn ttct = new tctbtn();
                 ttct.Name = "tct_" + neqid.Name;
                 ttct.Dock = DockStyle.Top;
-                ttct.UserControlBtnClicked += new tctbtn.BtnClickHandle(tctbtn_UserControlBtnClicked);
+                ttct.UserControlBtnDoubleClicked += new tctbtn.BtnDoubleClickHandle(tctbtn_UserControlBtnDoubleClicked);
 
                 foreach (XmlElement tname in neqid.ChildNodes)
                 {
@@ -110,8 +132,196 @@ namespace lfglnet
 
                     }
                 }
+                ttct.eqstate = 0;
                 panel_con3.Controls.Add(ttct);
             }
+        }
+        //public TEQinfo getEq(int clientid)
+        //{
+        //    TEQinfo req = null;
+        //    foreach (TEQinfo teq in eqinfos)
+        //    {
+        //        if (teq.clientid == clientid)
+        //        {
+        //            req = teq;
+        //        }
+
+        //    }
+        //    return req;
+        //}
+
+
+        public int sendEQdata(JSEQdata jsq)
+        {
+            if (false)
+            {
+                using (SqlConnection sqlcon = new SqlConnection(lfcon._constring))
+                {
+
+                    SqlCommand command = new SqlCommand("Insert into Checkinout(Userid,Checktime,Checktype,Sensorid,WorkType,AttFlag,OpenDoorFlag) values(@Userid,@Checktime,@Checktype,@Sensorid,@WorkType,@AttFlag,@OpenDoorFlag);", sqlcon);
+                    command.Connection.Open();
+                    command.Parameters.Add("@Userid", SqlDbType.Int).Value = jsq.Userid;
+                    command.Parameters.Add("@Checktime", SqlDbType.DateTime).Value = jsq.Checktime;
+                    command.Parameters.Add("@Checktype", SqlDbType.Int).Value = jsq.Checktype;
+                    command.Parameters.Add("@Sensorid", SqlDbType.Int).Value = jsq.Sensorid;
+                    command.Parameters.Add("@WorkType", SqlDbType.Int).Value = jsq.WorkType;
+                    command.Parameters.Add("@AttFlag", SqlDbType.Int).Value = jsq.AttFlag;
+                    command.Parameters.Add("@OpenDoorFlag", SqlDbType.Int).Value = jsq.OpenDoorFlag;
+                    command.ExecuteNonQuery();
+
+                    sqlcon.Close();
+
+                }
+            }
+            if (true)
+            {
+
+                PostWebRequest("http://localhost:6625/glf/getpost", JSONHelper.Serialize<JSEQdata>(jsq));
+            }
+            return 0;
+        }
+        public void readEq()
+        {
+            AnvizNew.CLOCKINGRECORD ta = new AnvizNew.CLOCKINGRECORD();
+            int RecordCount = new int();
+            int pLongRun = new int();
+            int RetCount = new int();
+            int pClockings = new int();
+            int pTemprun = new int();
+            while(true)
+            {
+                foreach (TEQinfo teq in eqinfos)
+                {
+                    int ret = 0;
+                    try
+                    {
+                        switch (teq.linkMode)
+                        {
+                            case 3:
+                                ret = AnvizNew.CKT_RegisterUSB(teq.clientid, 0);
+
+                                break;
+                            case 4:
+                                break;
+                            default:
+                                break;
+                        }
+                        if (ret == 0)
+                        {
+                            teq.ctbtn.eqstate = 0;
+                            continue;
+                        }
+                        else
+                        {
+                            teq.ctbtn.eqstate = 1;
+                        }
+
+                        if (AnvizNew.CKT_GetClockingNewRecordEx(teq.clientid, ref pLongRun) == 1)
+                        {
+                            int recnum = 0;
+                            pTemprun = pLongRun;
+                            while (true)
+                            {
+                                //ret = AnvizNew.CKT_GetClockingRecordProgress(pLongRun, ref RecordCount, ref RetCount, ref pClockings);
+                                ret = AnvizNew.CKT_GetClockingRecordProgress(pTemprun, ref RecordCount, ref RetCount, ref pClockings);// pClockings);
+                                if (ret != 0)
+                                {
+                                    for (int i = 0; i < RetCount; i++)
+                                    {
+                                        recnum++;
+                                        RtlMoveMemory(ref ta, pClockings, Marshal.SizeOf(ta));
+                                        pClockings = pClockings + Marshal.SizeOf(ta);
+                                        if (ta.PersonID < 0)
+                                        {
+                                            continue;
+                                        }
+                                        JSEQdata tjsq = new JSEQdata();
+                                        tjsq.Userid = ta.PersonID;
+                                        tjsq.Checktime = Encoding.Default.GetString(ta.Time).ToString();
+                                        tjsq.Checktype = ta.Stat;
+                                        tjsq.Sensorid = ta.ID;
+                                        tjsq.WorkType = ta.WorkType;
+                                        tjsq.AttFlag = ta.BackupCode;
+                                        tjsq.OpenDoorFlag = 0;
+                                        sendEQdata(tjsq);
+                                       
+                                    }
+
+                                    AnvizNew.CKT_FreeMemory(pClockings);
+                                    if(recnum > 0)                                   
+                                        if (AnvizNew.CKT_ClearClockingRecord(teq.clientid, 1, 0) == 0)
+                                            throw new Exception("Clear Error");
+                                }
+                                if (ret == 1) break;
+                            }
+                            if(recnum > 0)
+                            this.BeginInvoke(new Update2(Updatecon_2), new object[] { teq.clientName + ":" + recnum.ToString() });
+                        }
+
+                    }
+                    catch (Exception ex)
+                    {
+                        this.BeginInvoke(new Update2(Updatecon_2), new object[] { teq.clientName + ":"+ex.Message });
+                    }
+                }
+                Thread.Sleep(10000);
+            }
+ 
+        }
+
+        
+
+        public void Updatecon_4()
+        {
+            using (SqlConnection sqlcon = new SqlConnection(lfcon._constring))
+            {
+                try
+                {
+                    SqlCommand command = new SqlCommand("select * from fingerclient;", sqlcon);
+                    command.Connection.Open();
+                    SqlDataReader sqlreader = command.ExecuteReader();
+                    eqinfos.Clear();
+                    while (sqlreader.Read())
+                    {
+                        //public int clientid;
+                        //public string clientName;
+                        //public int linkMode;
+                        //public string ipAddress;
+                        //public int clientNumber;
+                        tctbtn ttct = new tctbtn();
+                        ttct.Name = "tct_" + sqlreader["clientid"].ToString();
+                        ttct.Dock = DockStyle.Top;
+                        ttct.UserControlBtnDoubleClicked += new tctbtn.BtnDoubleClickHandle(tctbtn_UserControlBtnDoubleClicked);
+                        ttct.eqname = sqlreader["clientname"].ToString();
+                        ttct.eqinfo = sqlreader["linkmode"].ToString();
+                        ttct.eqstate = 0;
+
+                        TEQinfo teq = new TEQinfo();
+                        teq.clientid = Convert.ToInt32(sqlreader["clientid"]);
+                        teq.clientName = sqlreader["clientname"].ToString();
+                        teq.linkMode = Convert.ToInt32(sqlreader["linkMode"]);
+                        teq.ipAddress = sqlreader["ipAddress"].ToString();
+                        teq.clientNumber = Convert.ToInt32(sqlreader["clientNumber"]);
+                        teq.ctbtn = ttct;
+                        eqinfos.Add(teq);
+
+                        
+                        
+
+                        panel_con1.Controls.Add(ttct);
+                    }
+                    sqlreader.Close();
+                    sqlcon.Close();
+
+                }
+                catch (SqlException ex)
+                {
+
+                    // throw ex;
+                }
+            }
+
+
         }
 
         public void chgstastr(string str)
@@ -121,18 +331,18 @@ namespace lfglnet
 
         private void StartListening()
         {
-             try
-                {
-            listener = new System.Net.Sockets.TcpListener(ipAddress, listenport);
+            try
+            {
+                listener = new System.Net.Sockets.TcpListener(ipAddress, listenport);
 
-            listener.Start();
- 
-                }
-             catch (Exception e)
-             {
-                 MessageBox.Show("listening Error:" + e.Message);
-             }
-             while (thclient)
+                listener.Start();
+
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("listening Error:" + e.Message);
+            }
+            while (thclient)
             {
                 try
                 {
@@ -140,7 +350,7 @@ namespace lfglnet
                     clientservice = new System.Threading.Thread(new System.Threading.ThreadStart(ServiceClient));
                     clientservice.Start();
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
 
                 }
@@ -149,16 +359,13 @@ namespace lfglnet
         }
         private Boolean clientadd(Client cclient)
         {
-            Boolean chaven = false;
             foreach (Client tc in clients)
             {
                 if (tc.Name.CompareTo(cclient.Name) == 0)
                 {
-                    chaven = true;
+
                 }
             }
-            if (chaven)
-                return true;
             clients.Add(cclient);
             Cliinf ci = new Cliinf(cclient.Name);
             ci.lstip = cclient.Host.ToString();
@@ -169,7 +376,7 @@ namespace lfglnet
             ttb.Dock = DockStyle.Top;
             ttb.eqname = ci.eqname;
             ttb.eqinfo = ci.logodate;
-            ttb.UserControlBtnClicked += new tctbtn.BtnClickHandle(tctbtn_UserControlBtnClicked);
+            ttb.UserControlBtnDoubleClicked += new tctbtn.BtnDoubleClickHandle(tctbtn_UserControlBtnDoubleClicked);
             this.BeginInvoke(new Updatelogoeq(Updatecon_1), new object[] { ttb, true });
             return false;
 
@@ -194,7 +401,7 @@ namespace lfglnet
                             }
                         }
                     }
-                    
+
 
                 }
             }
@@ -205,7 +412,7 @@ namespace lfglnet
         private void ServiceClient()
         {
             System.Net.Sockets.Socket client = clientsocket;
-            Cliinf clf=null;
+            Cliinf clf = null;
             bool keepalive = true;
             bool keepjoin = false;
             if (client == null) keepalive = false;
@@ -220,13 +427,13 @@ namespace lfglnet
                     client.Receive(buffer, 0, bufLen, System.Net.Sockets.SocketFlags.None);
                     if (bufLen == 0) continue;
                     string clientcommand = System.Text.Encoding.UTF8.GetString(buffer).Substring(2, bufLen);
-                    string[] tokens = ((clientcommand.Replace("\0","").Replace("\f","")).Trim()).Split(new Char[] { '|' });
+                    string[] tokens = ((clientcommand.Replace("\0", "").Replace("\f", "")).Trim()).Split(new Char[] { '|' });
 
                     switch (tokens[0].Trim())
                     {
                         case "10":
                             chgstastr(tokens[1].Trim());
-                            
+
                             addclient = client;
                             SendToClient(addclient, "10|等待授权");
                             break;
@@ -264,7 +471,7 @@ namespace lfglnet
                                         clientadd(c);
                                         clf = new Cliinf(tokens[1]);
                                         this.BeginInvoke(new Update2(Updatecon_2), new object[] { clf.eqname + ":连接" });
-                                
+
                                     }
                                     else
                                     {
@@ -275,8 +482,8 @@ namespace lfglnet
                                 {
                                     SendToClient(client, "20|success");
                                 }
-                               
-                               
+
+
 
                             }
                             catch (Exception ex)
@@ -318,7 +525,7 @@ namespace lfglnet
                             if (found)
                             {
 
-                             
+
 
                                 clients.RemoveAt(remove);
 
@@ -332,28 +539,28 @@ namespace lfglnet
                                 if (tokens[1].CompareTo("user") == 0)
                                 {
                                     udsqluser();
-                                    useri = sqluser.Count-1;
+                                    useri = sqluser.Count - 1;
                                 }
                                 else
                                 {
-                                    useri = int.Parse(tokens[1])-1;
-                                    
+                                    useri = int.Parse(tokens[1]) - 1;
+
                                 }
-                               
+
 
                                 if (useri >= 0)
                                 {
                                     SendToClient(client, "40|" + useri + "," + sqluser[useri].staffcode + "," + sqluser[useri].staffname + "," + sqluser[useri].sectname + "," + sqluser[useri].emercnt);
-                                    if(useri==0)
+                                    if (useri == 0)
                                         sqluser.Clear();
                                 }
-                             
+
                             }
                             catch (System.Exception ex)
                             {
-                            	
+
                             }
-                            
+
                             break;
                         case "50":
                             int userj = 0;
@@ -374,11 +581,11 @@ namespace lfglnet
                                 if (userj >= 0)
                                 {
                                     SendToClient(client, "50|" + userj + "," + sqlitem[userj].itemcode + "," + sqlitem[userj].itemname + "," + sqlitem[userj].sectname);
-                                    if(userj == 0)
+                                    if (userj == 0)
                                         sqlitem.Clear();
-                
+
                                 }
-                              
+
                             }
                             catch (System.Exception ex)
                             {
@@ -421,11 +628,11 @@ namespace lfglnet
 
                                 string[] tmp = tokens[1].Split(',');
                                 string query = "update lk_usercfg set emercnt =  " + tmp[1] + " where staffcode = '" + tmp[0] + "';";
-                                    SqlCommand objSqlCommand = new SqlCommand(query, lfcon.con);
-                                    SendToClient(client, "70|" + tmp[0] + "," + tmp[1]);
-                                    this.BeginInvoke(new Update2(Updatecon_2), new object[] { tmp[2] + "_" + tmp[0] + "急诊数更新为" + tmp[1] });
+                                SqlCommand objSqlCommand = new SqlCommand(query, lfcon.con);
+                                SendToClient(client, "70|" + tmp[0] + "," + tmp[1]);
+                                this.BeginInvoke(new Update2(Updatecon_2), new object[] { tmp[2] + "_" + tmp[0] + "急诊数更新为" + tmp[1] });
 
-                           
+
                             }
                             catch (System.Exception ex)
                             {
@@ -434,20 +641,20 @@ namespace lfglnet
 
                             break;
                         case "80":
-                           
-                          
-                                 string[] tmp1 = tokens[1].Split(',');
-                                 fhstr[0] = tmp1[0];
-                                 fhstr[1] = tmp1[1];
-                                 fhstr[2] = tmp1[2];
-                                 fhstr[3] = tmp1[3];
-                                 fhstr[4] = tmp1[4];
 
-                                 ydsqlfh(client,int.Parse(fhstr[2]));
-                            if(clf != null)
-                                 this.BeginInvoke(new Update2(Updatecon_2), new object[] { clf.eqname + ":放号"+fhstr[0]+"_"+fhstr[1]+"_"+fhstr[2]+"_"+fhstr[3]+"_"+fhstr[4]});
-                                
-                                
+
+                            string[] tmp1 = tokens[1].Split(',');
+                            fhstr[0] = tmp1[0];
+                            fhstr[1] = tmp1[1];
+                            fhstr[2] = tmp1[2];
+                            fhstr[3] = tmp1[3];
+                            fhstr[4] = tmp1[4];
+
+                            ydsqlfh(client, int.Parse(fhstr[2]));
+                            if (clf != null)
+                                this.BeginInvoke(new Update2(Updatecon_2), new object[] { clf.eqname + ":放号" + fhstr[0] + "_" + fhstr[1] + "_" + fhstr[2] + "_" + fhstr[3] + "_" + fhstr[4] });
+
+
                             break;
                         case "90":
 
@@ -462,7 +669,7 @@ namespace lfglnet
                     timer2.Enabled = true;
 
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     keepalive = false;
                     foreach (Client tc in clients)
@@ -473,7 +680,7 @@ namespace lfglnet
                             break;
                         }
                     }
-                    
+
                 }
             }
         }
@@ -493,9 +700,9 @@ namespace lfglnet
             try
             {
                 sendstr.Add(clientCommand);
-                do 
+                do
                 {
-                     Thread.Sleep(10);
+                    Thread.Sleep(10);
                     Byte[] message = System.Text.Encoding.UTF8.GetBytes(sendstr[0]);
 
                     System.Net.Sockets.Socket s = sk;
@@ -509,19 +716,19 @@ namespace lfglnet
                     else
                         return false;
                 } while (sendstr.Count > 0);
-         
-                
+
+
             }
             catch (System.Exception ex)
             {
                 return false;
             }
-            
-            
+
+
         }
 
 
-      
+
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -529,11 +736,11 @@ namespace lfglnet
             this.Left = Screen.PrimaryScreen.Bounds.Width - 350;
             this.Top = 80;
 
-            pictureBox1.Controls.Add(label1);
+            label1.Parent = pictureBox1;
 
 
 
-            Updatecon_3();
+            Updatecon_4();
 
             //startls();
 
@@ -552,7 +759,7 @@ namespace lfglnet
 
         }
 
-  
+
 
         private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
@@ -562,7 +769,7 @@ namespace lfglnet
 
         private void Form1_Resize(object sender, EventArgs e)
         {
-   
+
             if (this.WindowState == FormWindowState.Minimized)
             {
                 this.Hide();
@@ -579,7 +786,7 @@ namespace lfglnet
         {
             CImgButton ut1;
             ut1 = (CImgButton)sender;
-            CImgButton[] uta = { cImgButton4, cImgButton5, cImgButton6};
+            CImgButton[] uta = { cImgButton4, cImgButton5, cImgButton6 };
             for (int i = 0; i < 3; i++)
             {
                 if (uta[i].Name == ut1.Name)
@@ -597,7 +804,7 @@ namespace lfglnet
                 }
                 uta[i].Refresh();
             }
-            
+
             //if (cImgButton4.Name == ut1.Name)
             //{
             //    descx = 0;
@@ -630,13 +837,7 @@ namespace lfglnet
                 panel_con.Left = descx > panel_con.Left ? panel_con.Left + itep : panel_con.Left - itep;
         }
 
-        private void tctbtn_UserControlBtnClicked(object sender, EventArgs e)
-        {
-            tctbtn tb = (tctbtn)sender;
-            Form3 f = new Form3(tb.Name.Substring(tb.Name.IndexOf('_')+1, tb.Name.Length - tb.Name.IndexOf('_')-1));
-            f.Show();
-        }
-
+        
         private void timer2_Tick(object sender, EventArgs e)
         {
             if (clients == null)
@@ -648,12 +849,12 @@ namespace lfglnet
                     clientdel(tc);
                     break;
                 }
-              
 
-               
+
+
             }
-               
-         
+
+
         }
 
         private void notifyIcon1_Click(object sender, EventArgs e)
@@ -663,8 +864,8 @@ namespace lfglnet
             //点鼠标右键,return  
             if (Mouse_e.Button == MouseButtons.Right)
             {
-                this.contextMenuStrip1.Show(MousePosition.X, MousePosition.Y-contextMenuStrip1.Height);
-               
+                this.contextMenuStrip1.Show(MousePosition.X, MousePosition.Y - contextMenuStrip1.Height);
+
             }
             else
             {
@@ -676,10 +877,10 @@ namespace lfglnet
                 {
                     this.Show();
                 }
-                
-                
+
+
             }
-           
+
         }
 
 
@@ -714,7 +915,7 @@ namespace lfglnet
                     sqluser.Add(tsqlu);
                 }
 
-               
+
 
                 objSqlReader.Close();
             }
@@ -750,96 +951,95 @@ namespace lfglnet
 
             }
         }
-        public void ydsqlfh(Socket client,int ni)
+        public void ydsqlfh(Socket client, int ni)
         {
             try
             {
 
-                if(ni>0)
+                if (ni > 0)
                 {
-                      Random ran=new Random();
-                    
-                                
-                                SqlCommand objSqlCommand;
-                                SqlDataReader objSqlReader;
-                                string query;
-                                int patcode;
-                                Boolean bl = true;
-                                do 
-                                {
-                                    
-                                    patcode = ran.Next(10000, 99999);
-                                    query = "select invioces from lk_paymentinfo where invioces = '" + patcode + "'";
-                                    objSqlCommand = new SqlCommand(query, lfcon.con);
-                                   objSqlReader = objSqlCommand.ExecuteReader();
-                                   bl = objSqlReader.Read();
-                                        objSqlReader.Close();
-
-                                } while (bl);
-
-                                string[] titem = fhstr[4].Split('`');
-                                foreach(string stritem in titem)
-                                {
-                                    if (stritem != "")
-                                    {
-                                        query = "INSERT INTO LK_PAYMENTINFO (PATIENTNAME,PATIENTCODE,ITEMCODE,CHKSTATE,CHKCNT,SECTTYPE,STAFF,AMOUNT,PAYDATE,EXTSERIES,CODEUSE,INVIOCES)  VALUES (@PATIENTNAME,@PATIENTCODE,@ITEMCODE,0,@CHKCNT,@SECTTYPE,@STAFF,0,getdate(),@EXTSERIES,@CODEUSE,@INVIOCES)";
-                                        objSqlCommand = new SqlCommand(query, lfcon.con);
-
-                                        objSqlCommand.Parameters.AddWithValue("@PATIENTNAME", fhstr[1]);
-                                        objSqlCommand.Parameters.AddWithValue("@PATIENTCODE", patcode);
-                                        objSqlCommand.Parameters.AddWithValue("@ITEMCODE", stritem);
-                                        objSqlCommand.Parameters.AddWithValue("@CHKCNT", fhstr[3]);
+                    Random ran = new Random();
 
 
-                                        objSqlCommand.Parameters.AddWithValue("@STAFF", "");
-                                        objSqlCommand.Parameters.AddWithValue("@CODEUSE", 1);
-                                        objSqlCommand.Parameters.AddWithValue("@INVIOCES", patcode);
+                    SqlCommand objSqlCommand;
+                    SqlDataReader objSqlReader;
+                    string query;
+                    int patcode;
+                    Boolean bl = true;
+                    do
+                    {
+
+                        patcode = ran.Next(10000, 99999);
+                        query = "select invioces from lk_paymentinfo where invioces = '" + patcode + "'";
+                        objSqlCommand = new SqlCommand(query, lfcon.con);
+                        objSqlReader = objSqlCommand.ExecuteReader();
+                        bl = objSqlReader.Read();
+                        objSqlReader.Close();
+
+                    } while (bl);
+
+                    string[] titem = fhstr[4].Split('`');
+                    foreach (string stritem in titem)
+                    {
+                        if (stritem != "")
+                        {
+                            query = "INSERT INTO LK_PAYMENTINFO (PATIENTNAME,PATIENTCODE,ITEMCODE,CHKSTATE,CHKCNT,SECTTYPE,STAFF,AMOUNT,PAYDATE,EXTSERIES,CODEUSE,INVIOCES)  VALUES (@PATIENTNAME,@PATIENTCODE,@ITEMCODE,0,@CHKCNT,@SECTTYPE,@STAFF,0,getdate(),@EXTSERIES,@CODEUSE,@INVIOCES)";
+                            objSqlCommand = new SqlCommand(query, lfcon.con);
+
+                            objSqlCommand.Parameters.AddWithValue("@PATIENTNAME", fhstr[1]);
+                            objSqlCommand.Parameters.AddWithValue("@PATIENTCODE", patcode);
+                            objSqlCommand.Parameters.AddWithValue("@ITEMCODE", stritem);
+                            objSqlCommand.Parameters.AddWithValue("@CHKCNT", fhstr[3]);
 
 
-                                        switch (fhstr[0])
-                                        {
-                                            case "1":
-                                                objSqlCommand.Parameters.AddWithValue("@EXTSERIES", "TP" + patcode);
-                                                objSqlCommand.Parameters.AddWithValue("@SECTTYPE", 4);
-                                                break;
-                                            case "2":
-                                                objSqlCommand.Parameters.AddWithValue("@EXTSERIES", "TJFHDW" + patcode);
-                                                objSqlCommand.Parameters.AddWithValue("@SECTTYPE", 3);
-                                                break;
-                                            case "3":
-                                                objSqlCommand.Parameters.AddWithValue("@EXTSERIES", "TJFHGR" + patcode);
-                                                objSqlCommand.Parameters.AddWithValue("@SECTTYPE", 3);
-                                                break;
-                                        }
+                            objSqlCommand.Parameters.AddWithValue("@STAFF", "");
+                            objSqlCommand.Parameters.AddWithValue("@CODEUSE", 1);
+                            objSqlCommand.Parameters.AddWithValue("@INVIOCES", patcode);
 
 
-                                        
+                            switch (fhstr[0])
+                            {
+                                case "1":
+                                    objSqlCommand.Parameters.AddWithValue("@EXTSERIES", "TP" + patcode);
+                                    objSqlCommand.Parameters.AddWithValue("@SECTTYPE", 4);
+                                    break;
+                                case "2":
+                                    objSqlCommand.Parameters.AddWithValue("@EXTSERIES", "TJFHDW" + patcode);
+                                    objSqlCommand.Parameters.AddWithValue("@SECTTYPE", 3);
+                                    break;
+                                case "3":
+                                    objSqlCommand.Parameters.AddWithValue("@EXTSERIES", "TJFHGR" + patcode);
+                                    objSqlCommand.Parameters.AddWithValue("@SECTTYPE", 3);
+                                    break;
+                            }
 
-                                        objSqlCommand.ExecuteNonQuery();
-                                    }
-                                    
-                                }
-                                
-                                 ni--;
-                                 SendToClient(client, "90|" + ni+","+patcode);
+
+
+
+                            objSqlCommand.ExecuteNonQuery();
+                        }
+
+                    }
+
+                    ni--;
+                    SendToClient(client, "90|" + ni + "," + patcode);
 
                 }
-                    
+
                 else
                 {
                     SendToClient(client, "90|0");
-                    
+
                 }
 
-                      
+
             }
-                         
+
             catch (System.Exception ex)
-                         
             {
-                         
+
                 SendToClient(client, "80|" + ex.Message);
-                         
+
             }
 
         }
@@ -867,7 +1067,7 @@ namespace lfglnet
 
         private void button1_Click(object sender, EventArgs e)
         {
-            PostWebRequest("http://torsion.apphb.com/wechat/", "okok", Encoding.Default);
+            PostWebRequest("http://torsion.apphb.com/wechat/", "okok");
             notifyIcon1.Icon = Properties.Resources.tp1;
         }
 
@@ -887,9 +1087,10 @@ namespace lfglnet
             Refresh();
         }
 
-        private string PostWebRequest(string postUrl, string paramData, Encoding dataEncode)
+        private string PostWebRequest(string postUrl, string paramData)
         {
             string ret = string.Empty;
+            Encoding dataEncode = Encoding.Default;
             try
             {
                 byte[] byteArray = dataEncode.GetBytes(paramData); //转化
@@ -915,7 +1116,29 @@ namespace lfglnet
             return ret;
         }
 
-   
+        private void button4_Click(object sender, EventArgs e)
+        {
+            //readEq();
+            new System.Threading.Thread(readEq).Start();
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            var tp = new Person()
+            {
+                FirstName = "gao",
+                LastName = "longfei",
+                tdata = new TData() {data1 = "d1",data2 = "d2"}
+            };
+
+            string json;
+            json = JSONHelper.Serialize<Person>(tp);
+            MessageBox.Show(json);
+
+             Person tper =  JSONHelper.Deserialize<Person>(json);
+        }
+
+
 
     }
 }

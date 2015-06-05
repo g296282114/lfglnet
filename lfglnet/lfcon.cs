@@ -6,9 +6,12 @@ using System.Xml;
 using System.Windows.Forms;
 using System.Data.SqlClient;
 using System.Runtime.InteropServices;
+using ctbtn;
 
 namespace lfglnet
 {
+   
+    
     public struct Tsqluser
     {
         public string staffcode;
@@ -22,30 +25,40 @@ namespace lfglnet
         public string itemname;
         public string sectname;
     }
+    class TEQinfo
+    {
+        public int clientid;
+        public string clientName;
+        public int linkMode;
+        public string ipAddress;
+        public int clientNumber;
+        public tctbtn ctbtn;
+    }
     class lfcon
     {
         private static string _stastr = "";
         private static Form1 _frm1 = new Form1();
         private static SqlConnection conn;
+        public static String _constring;
 
-         [DllImport("kernel32")]
+        [DllImport("kernel32")]
         private static extern long WritePrivateProfileString(string section, string key, string val, string filepath);
         [DllImport("kernel32")]
         private static extern int GetPrivateProfileString(string section, string key, string def, StringBuilder retval, int size, string filePath);
-        
+
 
         static lfcon()
         {
-            String _constring = "";
-             try
+            _constring = "";
+            try
             {
-                 
+
                 try
                 {
                     StringBuilder temp = new StringBuilder(1024);
                     string strFilePath = Application.StartupPath + "\\Config.ini";
-                    GetPrivateProfileString("database","server", "", temp, 1024, strFilePath);
-                    _constring += "server="+temp.ToString();
+                    GetPrivateProfileString("database", "server", "", temp, 1024, strFilePath);
+                    _constring += "server=" + temp.ToString();
 
                     GetPrivateProfileString("database", "uid", "", temp, 1024, strFilePath);
                     _constring += ";uid=" + temp.ToString();
@@ -73,19 +86,19 @@ namespace lfglnet
                 Environment.Exit(0);
             }
 
-            try
-            {
-                conn = new SqlConnection();
-                conn.ConnectionString = _constring;// "server=192.168.70.101;uid=sa;pwd=sa;database=lfgl";
-                conn.Open();
+            //try
+            //{
+            //    conn = new SqlConnection();
+            //    conn.ConnectionString = _constring;// "server=192.168.70.101;uid=sa;pwd=sa;database=lfgl";
+            //    conn.Open();
 
-            }
-            catch (System.Exception ex)
-            {
-                conn.Close();
-                MessageBox.Show("数据库连接失败" + ex.Message);
-                Environment.Exit(0);
-            }
+            //}
+            //catch (System.Exception ex)
+            //{
+            //    conn.Close();
+            //    MessageBox.Show("数据库连接失败" + ex.Message);
+            //    Environment.Exit(0);
+            //}
 
         }
 
@@ -101,7 +114,24 @@ namespace lfglnet
                 conn = value;
             }
         }
+        public static SqlDataReader sqlselect(string sqlstr)
+        {
+            using (conn = new SqlConnection(_constring))
+            {
+                try
+                {
+                    SqlCommand command = new SqlCommand(sqlstr, conn);
+                    command.Connection.Open();
+                    return command.ExecuteReader();
 
+                }
+                catch (SqlException ex)
+                {
+                    return null;
+                    // throw ex;
+                }
+            }
+        }
 
         public static Form1 frm1
         {
@@ -109,7 +139,7 @@ namespace lfglnet
             {
                 return _frm1;
             }
-      
+
         }
         public static string stastr
         {
@@ -122,7 +152,7 @@ namespace lfglnet
                 _stastr = value;
             }
         }
-   
+
 
     }
 
@@ -142,16 +172,16 @@ namespace lfglnet
 
 
         }
- 
+
         public void addxml(string streqid)
         {
             XmlDocument dom = new XmlDocument();
             dom.Load(System.AppDomain.CurrentDomain.BaseDirectory + "client.xml");
             XmlNode root = dom.SelectSingleNode("client");//查找<bookstore>
             if (root.SelectSingleNode(streqid) != null)
-            root.RemoveChild(root.SelectSingleNode(streqid));
+                root.RemoveChild(root.SelectSingleNode(streqid));
             XmlElement xeqid = dom.CreateElement(streqid);//添加一个名字为title的子节点
-            
+
             XmlElement xname = dom.CreateElement("name");
             xname.InnerText = name;
             xeqid.AppendChild(xname);
@@ -159,27 +189,27 @@ namespace lfglnet
             XmlElement xeqname = dom.CreateElement("eqname");
             xeqname.InnerText = eqname;
             xeqid.AppendChild(xeqname);
-            
-             XmlElement xlstip = dom.CreateElement("lstip");
+
+            XmlElement xlstip = dom.CreateElement("lstip");
             xlstip.InnerText = lstip;
             xeqid.AppendChild(xlstip);
 
-             XmlElement xcreatedate = dom.CreateElement("createdate");
-             xcreatedate.InnerText = createdate;
+            XmlElement xcreatedate = dom.CreateElement("createdate");
+            xcreatedate.InnerText = createdate;
             xeqid.AppendChild(xcreatedate);
 
-             XmlElement xlogodate = dom.CreateElement("logodate");
+            XmlElement xlogodate = dom.CreateElement("logodate");
             xlogodate.InnerText = logodate;
             xeqid.AppendChild(xlogodate);
 
-             XmlElement xbeizhu = dom.CreateElement("beizhu");
-             xbeizhu.InnerText = beizhu;
+            XmlElement xbeizhu = dom.CreateElement("beizhu");
+            xbeizhu.InnerText = beizhu;
             xeqid.AppendChild(xbeizhu);
 
             XmlElement xused = dom.CreateElement("used");
             xused.InnerText = used.ToString();
             xeqid.AppendChild(xused);
-            
+
             root.AppendChild(xeqid);
 
             dom.Save(System.AppDomain.CurrentDomain.BaseDirectory + "client.xml");
@@ -188,7 +218,7 @@ namespace lfglnet
         public Cliinf(string streqid)
         {
             XmlDocument dom = new XmlDocument();
-            dom.Load(System.AppDomain.CurrentDomain.BaseDirectory+ "client.xml");
+            dom.Load(System.AppDomain.CurrentDomain.BaseDirectory + "client.xml");
             foreach (XmlElement neqid in dom.DocumentElement.ChildNodes)
             {
                 if (streqid == neqid.Name)
@@ -211,7 +241,7 @@ namespace lfglnet
                                 break;
                             case "beizhu": beizhu = tname.InnerText;
                                 break;
-                            case "used": used = tname.InnerText.ToLower()=="true" ? true : false;
+                            case "used": used = tname.InnerText.ToLower() == "true" ? true : false;
                                 break;
 
                         }
@@ -220,7 +250,7 @@ namespace lfglnet
                 }
             }
         }
-        
+
 
 
     }
