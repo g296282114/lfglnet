@@ -41,3 +41,12 @@ F:\My Files\web\lfglnet\lfglnet\obj\x86\Debug\lfglnet.Form_mb.resources
 F:\My Files\web\lfglnet\lfglnet\obj\x86\Debug\lfglnet.Form3.resources
 F:\My Files\web\lfglnet\lfglnet\obj\x86\Debug\lfglnet.Properties.Resources.resources
 F:\My Files\web\lfglnet\lfglnet\obj\x86\Debug\lfglnet.csproj.GenerateResource.Cache
+E:\GitHub\lfglnet\lfglnet\obj\x86\Debug\lfglnet.exe
+E:\GitHub\lfglnet\lfglnet\obj\x86\Debug\lfglnet.pdb
+E:\GitHub\lfglnet\lfglnet\bin\Debug\lfglnet.exe
+E:\GitHub\lfglnet\lfglnet\bin\Debug\lfglnet.pdb
+E:\GitHub\lfglnet\lfglnet\obj\x86\Debug\lfglnet.Form1.resources
+E:\GitHub\lfglnet\lfglnet\obj\x86\Debug\lfglnet.Form_mb.resources
+E:\GitHub\lfglnet\lfglnet\obj\x86\Debug\lfglnet.Form3.resources
+E:\GitHub\lfglnet\lfglnet\obj\x86\Debug\lfglnet.Properties.Resources.resources
+E:\GitHub\lfglnet\lfglnet\obj\x86\Debug\lfglnet.csproj.GenerateResource.Cache

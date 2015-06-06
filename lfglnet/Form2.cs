@@ -43,27 +43,7 @@ namespace lfglnet
             SendMessage(this.Handle, WM_SYSCOMMAND, SC_MOVE + HTCAPTION, 0); 
         }
 
-        private void label2_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (label2.BackColor != Color.FromArgb(212, 64, 39))
-                label2.BackColor = Color.FromArgb(212, 64, 39);
-        }
-
-        private void label2_MouseLeave(object sender, EventArgs e)
-        {
-            label2.BackColor = Color.FromArgb(190, 144, 103);
-        }
-
-        private void label3_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (label3.BackColor != Color.FromArgb(199,160,125))
-                label3.BackColor = Color.FromArgb(199, 160, 125);
-        }
-
-        private void label3_MouseLeave(object sender, EventArgs e)
-        {
-            label3.BackColor = Color.FromArgb(190, 144, 103);
-        }
+       
 
         private void label2_Click(object sender, EventArgs e)
         {

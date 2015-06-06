@@ -29,8 +29,8 @@
         private void InitializeComponent()
         {
             this.panel2 = new System.Windows.Forms.Panel();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
+            this.cImgButton2 = new imgbutton.CImgButton();
+            this.cImgButton1 = new imgbutton.CImgButton();
             this.label1 = new System.Windows.Forms.Label();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
@@ -38,8 +38,8 @@
             // panel2
             // 
             this.panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(190)))), ((int)(((byte)(144)))), ((int)(((byte)(103)))));
-            this.panel2.Controls.Add(this.label3);
-            this.panel2.Controls.Add(this.label2);
+            this.panel2.Controls.Add(this.cImgButton2);
+            this.panel2.Controls.Add(this.cImgButton1);
             this.panel2.Controls.Add(this.label1);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel2.Location = new System.Drawing.Point(0, 0);
@@ -49,31 +49,39 @@
             this.panel2.Paint += new System.Windows.Forms.PaintEventHandler(this.panel2_Paint);
             this.panel2.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panel2_MouseDown);
             // 
-            // label3
+            // cImgButton2
             // 
-            this.label3.Font = new System.Drawing.Font("宋体", 20F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label3.ForeColor = System.Drawing.SystemColors.ControlLight;
-            this.label3.Location = new System.Drawing.Point(540, 1);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(25, 33);
-            this.label3.TabIndex = 2;
-            this.label3.Text = "-";
-            this.label3.Click += new System.EventHandler(this.label3_Click);
-            this.label3.MouseLeave += new System.EventHandler(this.label3_MouseLeave);
-            this.label3.MouseMove += new System.Windows.Forms.MouseEventHandler(this.label3_MouseMove);
+            this.cImgButton2.BackColor = System.Drawing.Color.White;
+            this.cImgButton2.bkal = 100;
+            this.cImgButton2.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.cImgButton2.fimage = global::lfglnet.Properties.Resources.btn2_1;
+            this.cImgButton2.Location = new System.Drawing.Point(540, 3);
+            this.cImgButton2.matrixB = 1F;
+            this.cImgButton2.matrixen = true;
+            this.cImgButton2.matrixG = 1F;
+            this.cImgButton2.matrixR = 1F;
+            this.cImgButton2.Name = "cImgButton2";
+            this.cImgButton2.Size = new System.Drawing.Size(28, 28);
+            this.cImgButton2.TabIndex = 30;
+            this.cImgButton2.tiptxt = "";
+            this.cImgButton2.Click += new System.EventHandler(this.label3_Click);
             // 
-            // label2
+            // cImgButton1
             // 
-            this.label2.Font = new System.Drawing.Font("宋体", 20F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label2.ForeColor = System.Drawing.SystemColors.ControlLight;
-            this.label2.Location = new System.Drawing.Point(567, 1);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(35, 33);
-            this.label2.TabIndex = 1;
-            this.label2.Text = "×";
-            this.label2.Click += new System.EventHandler(this.label2_Click);
-            this.label2.MouseLeave += new System.EventHandler(this.label2_MouseLeave);
-            this.label2.MouseMove += new System.Windows.Forms.MouseEventHandler(this.label2_MouseMove);
+            this.cImgButton1.BackColor = System.Drawing.Color.Red;
+            this.cImgButton1.bkal = 200;
+            this.cImgButton1.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.cImgButton1.fimage = global::lfglnet.Properties.Resources.btn1_1;
+            this.cImgButton1.Location = new System.Drawing.Point(572, 3);
+            this.cImgButton1.matrixB = 1F;
+            this.cImgButton1.matrixen = true;
+            this.cImgButton1.matrixG = 1F;
+            this.cImgButton1.matrixR = 1F;
+            this.cImgButton1.Name = "cImgButton1";
+            this.cImgButton1.Size = new System.Drawing.Size(28, 28);
+            this.cImgButton1.TabIndex = 29;
+            this.cImgButton1.tiptxt = "";
+            this.cImgButton1.Click += new System.EventHandler(this.label2_Click);
             // 
             // label1
             // 
@@ -104,9 +112,9 @@
         #endregion
 
         private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label2;
         public System.Windows.Forms.Label label1;
+        private imgbutton.CImgButton cImgButton2;
+        private imgbutton.CImgButton cImgButton1;
 
     }
 }
