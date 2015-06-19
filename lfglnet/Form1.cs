@@ -175,8 +175,7 @@ namespace lfglnet
             }
             if (true)
             {
-
-                PostWebRequest("http://localhost:6625/glf/getpost", JSONHelper.Serialize<JSEQdata>(jsq));
+                reJSON json = JSONHelper.Deserialize<reJSON>(PostWebRequest("http://localhost:6625/glf/getpost", JSONHelper.Serialize<JSEQdata>(jsq)));
             }
             return 0;
         }
@@ -237,7 +236,7 @@ namespace lfglnet
                                         }
                                         JSEQdata tjsq = new JSEQdata();
                                         tjsq.Userid = ta.PersonID;
-                                        tjsq.Checktime = Encoding.Default.GetString(ta.Time).ToString();
+                                        tjsq.Checktime = Encoding.Default.GetString(ta.Time).TrimEnd('\0');
                                         tjsq.Checktype = ta.Stat;
                                         tjsq.Sensorid = ta.ID;
                                         tjsq.WorkType = ta.WorkType;
