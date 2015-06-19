@@ -26,6 +26,8 @@ namespace lfglnet
 
     public partial class Form1 : Form
     {
+       // public string post_url = "http://localhost:6625/glf/getpost";
+        public string post_url = "http://torsion.apphb.com/glf/getpost";
         List<TEQinfo> eqinfos = new List<TEQinfo>();
         List<Tsqluser> sqluser = new List<Tsqluser>();
         List<Tsqlitem> sqlitem = new List<Tsqlitem>();
@@ -175,7 +177,7 @@ namespace lfglnet
             }
             if (true)
             {
-                reJSON json = JSONHelper.Deserialize<reJSON>(PostWebRequest("http://localhost:6625/glf/getpost", JSONHelper.Serialize<JSEQdata>(jsq)));
+                reJSON json = JSONHelper.Deserialize<reJSON>(PostWebRequest(post_url, JSONHelper.Serialize<JSEQdata>(jsq)));
             }
             return 0;
         }
