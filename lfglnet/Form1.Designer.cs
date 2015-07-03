@@ -41,6 +41,7 @@
             this.panel2 = new System.Windows.Forms.Panel();
             this.panel_con = new System.Windows.Forms.Panel();
             this.panel_con3 = new System.Windows.Forms.Panel();
+            this.button5 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
@@ -59,9 +60,9 @@
             this.cImgButton5 = new imgbutton.CImgButton();
             this.cImgButton4 = new imgbutton.CImgButton();
             this.panel3 = new System.Windows.Forms.Panel();
-            this.label2 = new System.Windows.Forms.Label();
-            this.button5 = new System.Windows.Forms.Button();
             this.cImgButton7 = new imgbutton.CImgButton();
+            this.label2 = new System.Windows.Forms.Label();
+            this.button6 = new System.Windows.Forms.Button();
             this.contextMenuStrip1.SuspendLayout();
             this.panel_con.SuspendLayout();
             this.panel_con3.SuspendLayout();
@@ -148,6 +149,7 @@
             // 
             this.panel_con3.AutoScroll = true;
             this.panel_con3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(251)))), ((int)(((byte)(246)))), ((int)(((byte)(242)))));
+            this.panel_con3.Controls.Add(this.button6);
             this.panel_con3.Controls.Add(this.button5);
             this.panel_con3.Controls.Add(this.button4);
             this.panel_con3.Controls.Add(this.button3);
@@ -158,6 +160,16 @@
             this.panel_con3.Name = "panel_con3";
             this.panel_con3.Size = new System.Drawing.Size(281, 412);
             this.panel_con3.TabIndex = 18;
+            // 
+            // button5
+            // 
+            this.button5.Location = new System.Drawing.Point(62, 190);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(75, 23);
+            this.button5.TabIndex = 33;
+            this.button5.Text = "button5";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
             // button4
             // 
@@ -390,25 +402,6 @@
             this.panel3.Size = new System.Drawing.Size(281, 45);
             this.panel3.TabIndex = 30;
             // 
-            // label2
-            // 
-            this.label2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
-            this.label2.Location = new System.Drawing.Point(158, 23);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(100, 13);
-            this.label2.TabIndex = 0;
-            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // button5
-            // 
-            this.button5.Location = new System.Drawing.Point(62, 190);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(75, 23);
-            this.button5.TabIndex = 33;
-            this.button5.Text = "button5";
-            this.button5.UseVisualStyleBackColor = true;
-            this.button5.Click += new System.EventHandler(this.button5_Click);
-            // 
             // cImgButton7
             // 
             this.cImgButton7.bkal = 0;
@@ -423,6 +416,25 @@
             this.cImgButton7.Size = new System.Drawing.Size(25, 25);
             this.cImgButton7.TabIndex = 4;
             this.cImgButton7.tiptxt = "";
+            // 
+            // label2
+            // 
+            this.label2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.label2.Location = new System.Drawing.Point(158, 23);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(100, 13);
+            this.label2.TabIndex = 0;
+            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // button6
+            // 
+            this.button6.Location = new System.Drawing.Point(10, 249);
+            this.button6.Name = "button6";
+            this.button6.Size = new System.Drawing.Size(75, 23);
+            this.button6.TabIndex = 34;
+            this.button6.Text = "insertAtt";
+            this.button6.UseVisualStyleBackColor = true;
+            this.button6.Click += new System.EventHandler(this.button6_Click);
             // 
             // Form1
             // 
@@ -496,6 +508,7 @@
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Button button5;
         private imgbutton.CImgButton cImgButton7;
+        private System.Windows.Forms.Button button6;
     }
 }
 
