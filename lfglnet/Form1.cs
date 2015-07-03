@@ -26,6 +26,9 @@ namespace lfglnet
 
     public partial class Form1 : Form
     {
+        public string post_url = "http://localhost:6625/glf/InAttendanceSetInfo";
+        //public string post_url = "http://localhost:6625/glf/getpost";
+        //public string post_url = "http://torsion.apphb.com/glf/getpost";
         List<TEQinfo> eqinfos = new List<TEQinfo>();
         List<Tsqluser> sqluser = new List<Tsqluser>();
         List<Tsqlitem> sqlitem = new List<Tsqlitem>();
@@ -175,8 +178,7 @@ namespace lfglnet
             }
             if (true)
             {
-
-                PostWebRequest("http://localhost:6625/glf/getpost", JSONHelper.Serialize<JSEQdata>(jsq));
+                reJSON json = JSONHelper.Deserialize<reJSON>(PostWebRequest(post_url, JSONHelper.Serialize<JSEQdata>(jsq)));
             }
             return 0;
         }
@@ -237,7 +239,7 @@ namespace lfglnet
                                         }
                                         JSEQdata tjsq = new JSEQdata();
                                         tjsq.Userid = ta.PersonID;
-                                        tjsq.Checktime = Encoding.Default.GetString(ta.Time).ToString();
+                                        tjsq.Checktime = Encoding.Default.GetString(ta.Time).TrimEnd('\0');
                                         tjsq.Checktype = ta.Stat;
                                         tjsq.Sensorid = ta.ID;
                                         tjsq.WorkType = ta.WorkType;
@@ -1136,6 +1138,41 @@ namespace lfglnet
             MessageBox.Show(json);
 
              Person tper =  JSONHelper.Deserialize<Person>(json);
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            AttendanceSet.ClassesInfo ac = new AttendanceSet.ClassesInfo();
+            ac.id = 0;
+            ac.t_name = "test";
+            ac.time_e = -1;
+            ac.time_s = 1;
+            ac.valid_e = 2;
+            ac.valid_s = -2;
+            ac.work_s = 3;
+            ac.work_e = 4;
+            ac.timeinfo = new AttendanceSet.TimeInfo[2];
+
+            ac.timeinfo[0] = new AttendanceSet.TimeInfo();
+            ac.timeinfo[0].cid = 0;
+            ac.timeinfo[0].id = 0;
+            ac.timeinfo[0].rate = 1.5f;
+            ac.timeinfo[0].t_name = "t1";
+            ac.timeinfo[0].t_type = 1;
+            ac.timeinfo[0].work_s = 100;
+            ac.timeinfo[0].work_e = -100;
+
+            ac.timeinfo[1] = new AttendanceSet.TimeInfo();
+            ac.timeinfo[1].cid = 0;
+            ac.timeinfo[1].id = 1;
+            ac.timeinfo[1].rate = 2.5f;
+            ac.timeinfo[1].t_name = "t2";
+            ac.timeinfo[1].t_type = 2;
+            ac.timeinfo[1].work_s = 200;
+            ac.timeinfo[1].work_e = -200;
+
+
+            reJSON json = JSONHelper.Deserialize<reJSON>(PostWebRequest(post_url, JSONHelper.Serialize<AttendanceSet.ClassesInfo>(ac)));
         }
 
 

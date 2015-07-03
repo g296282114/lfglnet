@@ -3,6 +3,15 @@ using System.Runtime.InteropServices;
 namespace lfglnet
 {
     [DataContract]
+    public class reJSON
+    {
+        [DataMember]
+        public int errCode { get; set; }
+        [DataMember]
+        public string errMessage { get; set; }
+    }
+
+    [DataContract]
     public class JSEQdata
     {
         public JSEQdata() { }
