@@ -742,7 +742,7 @@ namespace lfglnet
 
 
 
-            Updatecon_4();
+         //   Updatecon_4();
 
             //startls();
 
@@ -1069,7 +1069,7 @@ namespace lfglnet
 
         private void button1_Click(object sender, EventArgs e)
         {
-            PostWebRequest("http://torsion.apphb.com/wechat/", "okok");
+            PostWebRequest("http://localhost:6625/glf/coneq", "okok");
             notifyIcon1.Icon = Properties.Resources.tp1;
         }
 
@@ -1097,6 +1097,7 @@ namespace lfglnet
             {
                 byte[] byteArray = dataEncode.GetBytes(paramData); //转化
                 HttpWebRequest webReq = (HttpWebRequest)WebRequest.Create(new Uri(postUrl));
+                webReq.Timeout = 150000;
                 webReq.Method = "POST";
                 webReq.ContentType = "application/x-www-form-urlencoded";
 
