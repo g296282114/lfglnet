@@ -61,7 +61,7 @@ namespace lfglnet
             public short wSecond;
             public short wMilliseconds;
         }
-
+        
         [StructLayout(LayoutKind.Sequential, Size = 18, CharSet = CharSet.Ansi), Serializable]
         public struct DATETIMEINFO
         {
@@ -229,8 +229,12 @@ namespace lfglnet
             //public byte Reserved;
         }
 
+
+
         // Routines
         //[DllImport("tc400.dll", ExactSpelling = true)] 
+
+  
         [DllImport("tc400.dll")]
         public static extern int CKT_SetNetTimeouts(int LTime);
 

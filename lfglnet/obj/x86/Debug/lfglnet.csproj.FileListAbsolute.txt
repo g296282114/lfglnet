@@ -50,4 +50,5 @@ E:\GitHub\lfglnet\lfglnet\obj\x86\Debug\lfglnet.Form_mb.resources
 E:\GitHub\lfglnet\lfglnet\obj\x86\Debug\lfglnet.Form3.resources
 E:\GitHub\lfglnet\lfglnet\obj\x86\Debug\lfglnet.Properties.Resources.resources
 E:\GitHub\lfglnet\lfglnet\obj\x86\Debug\lfglnet.csproj.GenerateResource.Cache
-E:\GitHub\lfglnet\lfglnet\obj\x86\Debug\lfglnet.csprojResolveAssemblyReference.cache
+E:\GitHub\lfglnet\lfglnet\bin\Debug\torsion.Model.dll
+E:\GitHub\lfglnet\lfglnet\bin\Debug\torsion.Model.pdb
