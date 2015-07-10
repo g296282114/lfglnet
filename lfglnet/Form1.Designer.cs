@@ -67,6 +67,7 @@
             this.panel3 = new System.Windows.Forms.Panel();
             this.cImgButton7 = new imgbutton.CImgButton();
             this.label2 = new System.Windows.Forms.Label();
+            this.button10 = new System.Windows.Forms.Button();
             this.contextMenuStrip1.SuspendLayout();
             this.panel_con.SuspendLayout();
             this.panel_con3.SuspendLayout();
@@ -153,6 +154,7 @@
             // 
             this.panel_con3.AutoScroll = true;
             this.panel_con3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(251)))), ((int)(((byte)(246)))), ((int)(((byte)(242)))));
+            this.panel_con3.Controls.Add(this.button10);
             this.panel_con3.Controls.Add(this.button9);
             this.panel_con3.Controls.Add(this.button8);
             this.panel_con3.Controls.Add(this.button7);
@@ -486,6 +488,16 @@
             this.label2.TabIndex = 0;
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
+            // button10
+            // 
+            this.button10.Location = new System.Drawing.Point(119, 295);
+            this.button10.Name = "button10";
+            this.button10.Size = new System.Drawing.Size(75, 23);
+            this.button10.TabIndex = 38;
+            this.button10.Text = "button10";
+            this.button10.UseVisualStyleBackColor = true;
+            this.button10.Click += new System.EventHandler(this.button10_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -564,6 +576,7 @@
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Button button9;
+        private System.Windows.Forms.Button button10;
     }
 }
 

@@ -31,8 +31,8 @@ namespace lfglnet
         string secretKey = "";
         //public string post_url = "http://localhost:6625/glf/InAttendanceSetInfo";
         //public string post_url = "http://localhost:6625/glf/getpost";
-        public string post_url = "http://torsion.apphb.com";
-       // public string post_url = "http://localhost:6625";
+        //public string post_url = "http://torsion.apphb.com";
+        public string post_url = "http://localhost:6625";
         torsion.Model.DeviceInfo[] gl_ardi;
         List<SoftModel.TDeviceList> gl_lst = new List<SoftModel.TDeviceList>();
         List<TEQinfo> eqinfos = new List<TEQinfo>();
@@ -1022,7 +1022,6 @@ namespace lfglnet
                 sr.Close();
                 response.Close();
                 newStream.Close();
-                changeNotifyIco();
             }
             catch (Exception ex)
             {
@@ -1200,6 +1199,9 @@ namespace lfglnet
                             //if (AnvizNew.CKT_ClearClockingRecord(smtdl.di.DeviceId, 1, 0) == 0)
                             //    throw new Exception("Clear Error");
                             break;
+                        case torsion.Model.GlfGloVar.CMD_OPENLOCK:
+                            forceOpenLock();
+                            break;
                         default:
                             this.BeginInvoke(new Update2(Updatecon_2), new object[] { "UnKnown:" + rjmrd.cmd });
                             break;
@@ -1272,6 +1274,24 @@ namespace lfglnet
                     return;
                 System.Threading.Thread.Sleep(torsion.Model.GlfGloVar.CLIENT_SLEEP_TIME);
             }
+        }
+       // CKT_ForceOpenLock
+
+        public void forceOpenLock()
+        {
+            try
+            {
+                DeviceUsing.WaitOne();
+                AnvizNew.CKT_RegisterUSB(0, 0);
+                AnvizNew.CKT_ForceOpenLock(0);
+                AnvizNew.CKT_Disconnect();
+                DeviceUsing.ReleaseMutex();
+            }
+            catch(Exception e)
+            {
+                torsion.Model.GlfGloFun.Write_Err(e.Message);
+            }
+            
         }
         public void readNewRecord()
         {
@@ -1374,6 +1394,7 @@ namespace lfglnet
                             
                             torsion.Model.GlfGloFun.Write_Err(e.Message,2);
                         }
+                        AnvizNew.CKT_Disconnect();
                         DeviceUsing.ReleaseMutex();
                         
 
@@ -1390,6 +1411,7 @@ namespace lfglnet
             }
 
         }
+
 
         public int sendEQdata(JSEQdata jsq)
         {
@@ -1513,6 +1535,11 @@ namespace lfglnet
             torsion.Model.JsonModel.RecData jmrd = new torsion.Model.JsonModel.RecData();
             jmrd.cmd = torsion.Model.GlfGloVar.CMD_DEVICELIST;
             SendData(jmrd);
+        }
+
+        private void button10_Click(object sender, EventArgs e)
+        {
+            forceOpenLock();
         }
 
 
