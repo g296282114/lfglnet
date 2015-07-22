@@ -31,8 +31,8 @@ namespace lfglnet
         string secretKey = "";
         //public string post_url = "http://localhost:6625/glf/InAttendanceSetInfo";
         //public string post_url = "http://localhost:6625/glf/getpost";
-        //public string post_url = "http://torsion.apphb.com";
-        public string post_url = "http://localhost:6625";
+        public string post_url = "http://torsion.apphb.com";
+       // public string post_url = "http://localhost:6625";
         torsion.Model.DeviceInfo[] gl_ardi;
         List<SoftModel.TDeviceList> gl_lst = new List<SoftModel.TDeviceList>();
         List<TEQinfo> eqinfos = new List<TEQinfo>();
@@ -115,8 +115,6 @@ namespace lfglnet
             frm3.Show();
             
         }
-
-        
 
         private void Updatecon_1(tctbtn tb, Boolean bl)
         {
@@ -1201,6 +1199,7 @@ namespace lfglnet
                             break;
                         case torsion.Model.GlfGloVar.CMD_OPENLOCK:
                             forceOpenLock();
+                            this.BeginInvoke(new Update2(Updatecon_2), new object[] { "forceOpenLock:" + rjmrd.cmd });
                             break;
                         default:
                             this.BeginInvoke(new Update2(Updatecon_2), new object[] { "UnKnown:" + rjmrd.cmd });
