@@ -41,6 +41,9 @@
             this.panel2 = new System.Windows.Forms.Panel();
             this.panel_con = new System.Windows.Forms.Panel();
             this.panel_con3 = new System.Windows.Forms.Panel();
+            this.button11 = new System.Windows.Forms.Button();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.button10 = new System.Windows.Forms.Button();
             this.button9 = new System.Windows.Forms.Button();
             this.button8 = new System.Windows.Forms.Button();
             this.button7 = new System.Windows.Forms.Button();
@@ -67,7 +70,6 @@
             this.panel3 = new System.Windows.Forms.Panel();
             this.cImgButton7 = new imgbutton.CImgButton();
             this.label2 = new System.Windows.Forms.Label();
-            this.button10 = new System.Windows.Forms.Button();
             this.contextMenuStrip1.SuspendLayout();
             this.panel_con.SuspendLayout();
             this.panel_con3.SuspendLayout();
@@ -154,6 +156,8 @@
             // 
             this.panel_con3.AutoScroll = true;
             this.panel_con3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(251)))), ((int)(((byte)(246)))), ((int)(((byte)(242)))));
+            this.panel_con3.Controls.Add(this.button11);
+            this.panel_con3.Controls.Add(this.comboBox1);
             this.panel_con3.Controls.Add(this.button10);
             this.panel_con3.Controls.Add(this.button9);
             this.panel_con3.Controls.Add(this.button8);
@@ -170,39 +174,71 @@
             this.panel_con3.Size = new System.Drawing.Size(281, 412);
             this.panel_con3.TabIndex = 18;
             // 
+            // button11
+            // 
+            this.button11.Location = new System.Drawing.Point(42, 49);
+            this.button11.Name = "button11";
+            this.button11.Size = new System.Drawing.Size(75, 23);
+            this.button11.TabIndex = 40;
+            this.button11.Text = "button11";
+            this.button11.UseVisualStyleBackColor = true;
+            this.button11.Click += new System.EventHandler(this.button11_Click);
+            // 
+            // comboBox1
+            // 
+            this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Items.AddRange(new object[] {
+            "http://torsion.apphb.com",
+            "http://localhost:6124"});
+            this.comboBox1.Location = new System.Drawing.Point(10, 7);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(191, 20);
+            this.comboBox1.TabIndex = 39;
+            // 
+            // button10
+            // 
+            this.button10.Location = new System.Drawing.Point(29, 309);
+            this.button10.Name = "button10";
+            this.button10.Size = new System.Drawing.Size(153, 23);
+            this.button10.TabIndex = 38;
+            this.button10.Text = "GetAllRecord";
+            this.button10.UseVisualStyleBackColor = true;
+            this.button10.Click += new System.EventHandler(this.button10_Click);
+            // 
             // button9
             // 
-            this.button9.Location = new System.Drawing.Point(126, 249);
+            this.button9.Location = new System.Drawing.Point(33, 267);
             this.button9.Name = "button9";
-            this.button9.Size = new System.Drawing.Size(75, 23);
+            this.button9.Size = new System.Drawing.Size(149, 23);
             this.button9.TabIndex = 37;
-            this.button9.Text = "button9";
+            this.button9.Text = "GetDevice";
             this.button9.UseVisualStyleBackColor = true;
             this.button9.Click += new System.EventHandler(this.button9_Click);
             // 
             // button8
             // 
-            this.button8.Location = new System.Drawing.Point(10, 338);
+            this.button8.Location = new System.Drawing.Point(29, 349);
             this.button8.Name = "button8";
-            this.button8.Size = new System.Drawing.Size(75, 23);
+            this.button8.Size = new System.Drawing.Size(153, 23);
             this.button8.TabIndex = 36;
-            this.button8.Text = "button8";
+            this.button8.Text = "NewRecordThread";
             this.button8.UseVisualStyleBackColor = true;
             this.button8.Click += new System.EventHandler(this.button8_Click);
             // 
             // button7
             // 
-            this.button7.Location = new System.Drawing.Point(10, 295);
+            this.button7.Location = new System.Drawing.Point(33, 224);
             this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(75, 23);
+            this.button7.Size = new System.Drawing.Size(149, 23);
             this.button7.TabIndex = 35;
-            this.button7.Text = "button7";
+            this.button7.Text = "Connect";
             this.button7.UseVisualStyleBackColor = true;
             this.button7.Click += new System.EventHandler(this.button7_Click);
             // 
             // button6
             // 
-            this.button6.Location = new System.Drawing.Point(10, 249);
+            this.button6.Location = new System.Drawing.Point(126, 158);
             this.button6.Name = "button6";
             this.button6.Size = new System.Drawing.Size(75, 23);
             this.button6.TabIndex = 34;
@@ -212,7 +248,7 @@
             // 
             // button5
             // 
-            this.button5.Location = new System.Drawing.Point(62, 190);
+            this.button5.Location = new System.Drawing.Point(29, 158);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(75, 23);
             this.button5.TabIndex = 33;
@@ -222,7 +258,7 @@
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(89, 24);
+            this.button4.Location = new System.Drawing.Point(126, 61);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(75, 23);
             this.button4.TabIndex = 32;
@@ -279,6 +315,7 @@
             this.textBox1.Location = new System.Drawing.Point(0, 0);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
+            this.textBox1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.textBox1.Size = new System.Drawing.Size(281, 412);
             this.textBox1.TabIndex = 0;
             // 
@@ -488,16 +525,6 @@
             this.label2.TabIndex = 0;
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // button10
-            // 
-            this.button10.Location = new System.Drawing.Point(119, 295);
-            this.button10.Name = "button10";
-            this.button10.Size = new System.Drawing.Size(75, 23);
-            this.button10.TabIndex = 38;
-            this.button10.Text = "button10";
-            this.button10.UseVisualStyleBackColor = true;
-            this.button10.Click += new System.EventHandler(this.button10_Click);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -577,6 +604,8 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Button button9;
         private System.Windows.Forms.Button button10;
+        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.Button button11;
     }
 }
 

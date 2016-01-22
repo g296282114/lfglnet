@@ -26,15 +26,19 @@ namespace lfglnet
 
     public partial class Form1 : Form
     {
-        static Mutex DeviceUsing = new Mutex(true, "gl_DeviceUsing");
+        static Mutex DeviceUsing = new Mutex(false, "gl_DeviceUsing");
+        static Mutex CallCmdUsing = new Mutex(false, "gl_CallCmdUsing");
         torsion.Model.SoftInfo gl_si = new torsion.Model.SoftInfo();
+        List<SoftModel.TDeviceList> gl_lst = new List<SoftModel.TDeviceList>();
+
+
         string secretKey = "";
         //public string post_url = "http://localhost:6625/glf/InAttendanceSetInfo";
         //public string post_url = "http://localhost:6625/glf/getpost";
-        public string post_url = "http://torsion.apphb.com";
-       // public string post_url = "http://localhost:6625";
-        torsion.Model.DeviceInfo[] gl_ardi;
-        List<SoftModel.TDeviceList> gl_lst = new List<SoftModel.TDeviceList>();
+        //public string post_url = "http://torsion.apphb.com";
+        public string post_url;
+
+        List<torsion.Model.DeviceInfo.DeviceSearch> eqsearch = new List<torsion.Model.DeviceInfo.DeviceSearch>();
         List<TEQinfo> eqinfos = new List<TEQinfo>();
         List<Tsqluser> sqluser = new List<Tsqluser>();
         List<Tsqlitem> sqlitem = new List<Tsqlitem>();
@@ -90,6 +94,7 @@ namespace lfglnet
             InitializeComponent();
             sendstr.Clear();
 
+
         }
         private void changeNotifyIco()
         {
@@ -113,7 +118,7 @@ namespace lfglnet
             tctbtn tb = (tctbtn)sender;
             Form3 frm3 = new Form3(tb.Name.Substring(tb.Name.IndexOf('_') + 1, tb.Name.Length - tb.Name.IndexOf('_') - 1));
             frm3.Show();
-            
+
         }
 
         private void Updatecon_1(tctbtn tb, Boolean bl)
@@ -126,8 +131,25 @@ namespace lfglnet
 
         public void Updatecon_2(String str)
         {
-            textBox1.Text += (DateTime.Now.ToString() + System.Environment.NewLine + "  " + str + System.Environment.NewLine);
+            if (str[str.Length - 1] == '%')
+            {
+                str = str.PadLeft(5);
+                string str1 = textBox1.Text;
+                if (str1[str1.Length - 1] == '%')
+                {
+                    str1 = str1.Substring(0, str1.Length - 5);
+                }
+                str1 += str;
+                textBox1.Text = str1;
+            }
+            else
+            {
+                textBox1.AppendText(System.Environment.NewLine + DateTime.Now.ToString("MM/dd HH:mm:ss") + System.Environment.NewLine + "    " + str);
+            }
+
+
         }
+
         public void UpLabel2()
         {
             label2.Text = DateTime.Now.ToString();
@@ -179,8 +201,8 @@ namespace lfglnet
         //}
 
 
-       
-        
+
+
 
         public void Updatecon_4()
         {
@@ -216,8 +238,8 @@ namespace lfglnet
                         teq.ctbtn = ttct;
                         eqinfos.Add(teq);
 
-                        
-                        
+
+
 
                         panel_con1.Controls.Add(ttct);
                     }
@@ -648,10 +670,11 @@ namespace lfglnet
             this.Top = 80;
 
             label1.Parent = pictureBox1;
+            comboBox1.SelectedIndex = 0;
+            //DeviceUsing.ReleaseMutex();
+            //CallCmdUsing.ReleaseMutex();
 
-            DeviceUsing.ReleaseMutex();
-
-         //   Updatecon_4();
+            //   Updatecon_4();
 
             //startls();
 
@@ -750,10 +773,10 @@ namespace lfglnet
                 panel_con.Left = descx > panel_con.Left ? panel_con.Left + itep : panel_con.Left - itep;
             }
 
-            label5.Left = 45+ Convert.ToInt32(-panel_con.Left / 3.3);
+            label5.Left = 45 + Convert.ToInt32(-panel_con.Left / 3.3);
         }
 
-        
+
         private void timer2_Tick(object sender, EventArgs e)
         {
             if (clients == null)
@@ -776,7 +799,7 @@ namespace lfglnet
         private void notifyIcon1_Click(object sender, EventArgs e)
         {
             MouseEventArgs Mouse_e = (MouseEventArgs)e;
-            
+
 
             //点鼠标右键,return  
             if (Mouse_e.Button == MouseButtons.Right)
@@ -983,7 +1006,7 @@ namespace lfglnet
 
         private void button2_Click(object sender, EventArgs e)
         {
-           
+
             changeNotifyIco();
 
         }
@@ -998,10 +1021,10 @@ namespace lfglnet
             Refresh();
         }
 
-        private string PostWebRequest(string postUrl, string paramData,int timeout = 100000)
+        private string PostWebRequest(string postUrl, string paramData, int timeout = 100000)
         {
             string ret = string.Empty;
-            Encoding dataEncode = Encoding.Default;
+            Encoding dataEncode = Encoding.UTF8;
             try
             {
                 byte[] byteArray = dataEncode.GetBytes(paramData); //转化
@@ -1025,14 +1048,16 @@ namespace lfglnet
             {
                 torsion.Model.GlfGloFun.Write_Err(ex.Message);
             }
-            
+
             return ret;
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
             //readEq();
-            new System.Threading.Thread(readEq).Start();
+            // getAllPerson();
+            new Thread(getAllPerson).Start();
+            // getAllPerson();
         }
 
         private void button5_Click(object sender, EventArgs e)
@@ -1041,14 +1066,14 @@ namespace lfglnet
             {
                 FirstName = "gao",
                 LastName = "longfei",
-                tdata = new TData() {data1 = "d1",data2 = "d2"}
+                tdata = new TData() { data1 = "d1", data2 = "d2" }
             };
 
             string json;
             json = JSONHelper.Serialize<Person>(tp);
             MessageBox.Show(json);
 
-             Person tper =  JSONHelper.Deserialize<Person>(json);
+            Person tper = JSONHelper.Deserialize<Person>(json);
         }
 
         private void button6_Click(object sender, EventArgs e)
@@ -1088,26 +1113,27 @@ namespace lfglnet
 
         private void button7_Click(object sender, EventArgs e)
         {
-
+            post_url = comboBox1.Text;
             if (ConDevice() == torsion.Model.GlfGloVar.RE_SUCCESS)
             {
-
+                gl_si.cmd = torsion.Model.GlfGloVar.CMD_HEARTBEAT;
                 new System.Threading.Thread(ComDevice).Start();
+                //new Thread(EQcmd).Start();
                 this.BeginInvoke(new Update2(Updatecon_2), new object[] { "Connected " + post_url });
             }
-             
+
         }
 
         public void addDevice()
         {
             panel_con1.Controls.Clear();
-            
-            foreach (torsion.Model.DeviceInfo di in gl_ardi)
+
+            foreach (torsion.Model.DeviceInfo di in gl_si.di)
             {
                 SoftModel.TDeviceList smtdl = new SoftModel.TDeviceList();
                 smtdl.di = di;
                 tctbtn ttct = new tctbtn();
-                ttct.Name = "tct_" + di.DeviceId;
+                ttct.Name = "tct_" + di.deviceSet.DeviceId;
                 ttct.Dock = DockStyle.Top;
                 ttct.UserControlBtnDoubleClicked += new tctbtn.BtnDoubleClickHandle(tctbtn_UserControlBtnDoubleClicked);
                 ttct.eqname = di.deviceSet.DeviceName;
@@ -1119,7 +1145,7 @@ namespace lfglnet
                 smtdl.tb = ttct;
                 gl_lst.Add(smtdl);
 
-            }           
+            }
 
         }
         public void clearDevice()
@@ -1129,107 +1155,291 @@ namespace lfglnet
                 panel_con1.Controls.Remove(gl_lst[0].tb);
                 gl_lst.Remove(gl_lst[0]);
             }
-         
+
         }
 
         public torsion.Model.JsonModel.RecData SendData(torsion.Model.JsonModel.RecData sjmrd)
         {
             torsion.Model.JsonModel.RecData rjmrd = new torsion.Model.JsonModel.RecData();
-            string ComDevice_url = post_url + "/DeviceCom/RecDevice" + "?access_token=" + gl_si.assess_token;
-            rjmrd = JsonConvert.DeserializeObject<torsion.Model.JsonModel.RecData>(PostWebRequest(ComDevice_url, JsonConvert.SerializeObject(sjmrd), torsion.Model.GlfGloVar.SENDTIMEOUT));
+            try
+            {
+                string ComDevice_url = post_url + "/SoftInfo/RecSoft" + "?access_token=" + gl_si.assess_token;
+                string recstr = PostWebRequest(ComDevice_url, JsonConvert.SerializeObject(sjmrd), torsion.Model.GlfGloVar.SENDTIMEOUT);
+                rjmrd = JsonConvert.DeserializeObject<torsion.Model.JsonModel.RecData>(recstr);
+            }
+            catch (Exception e)
+            {
+                torsion.Model.GlfGloFun.Write_Err(e.Message);
+            }
+
             return rjmrd;
-  
+
         }
 
+        public void upAllPerson()
+        {
+            //string dir = System.Environment.CurrentDirectory + "\\tmp\\0\\";
+            //Directory.CreateDirectory(dir);
+            //using (StreamWriter sw = new StreamWriter(dir + fileint.ToString() + ".tmp"))
+            //{
+            //    sw.Write(jmrd.cdata);
+            //}
+            //fileint++;
+        }
+
+        public void getAllPerson()
+        {
+
+            torsion.Model.JsonModel.RecData jmrd = new torsion.Model.JsonModel.RecData();
+            torsion.Model.JsonModel.RecData rjmrd = new torsion.Model.JsonModel.RecData();
+            jmrd.cmd = torsion.Model.GlfGloVar.CMD_S_SETALLPERSON;
+            this.BeginInvoke(new Update2(Updatecon_2), new object[] { "Start getAllPerson" });
+            int RecordCount = new int();
+            int RetCount = new int();
+            int pPersons = new int();
+            int pLongRun = new int();
+            AnvizNew.CKT_SetNetTimeouts(20000);
+            int ret = AnvizNew.CKT_RegisterNetWithPort(0, 6011, "192.168.19.213");
+            // AnvizNew.CKT_RegisterUSB(0, 0);
+            AnvizNew.PERSONINFO person = new AnvizNew.PERSONINFO();
+            int ptemp;
+            int tempptr = 0;
+            if (AnvizNew.CKT_ListPersonInfoEx(0, ref pLongRun) == 1)
+            {
+                torsion.Model.JsonModel.MulJson jmmj = new torsion.Model.JsonModel.MulJson();
+                List<torsion.Model.UserInfo.BaseInfo> luibi = new List<torsion.Model.UserInfo.BaseInfo>();
+                while (true)
+                {
+
+                    if (jmmj.jstat == 2) break;
+                    ret = AnvizNew.CKT_ListPersonProgress(pLongRun, ref RecordCount, ref RetCount, ref pPersons);
+                    if (ret != 0 && RetCount > 0)
+                    {
+                        jmmj.jall = RecordCount;
+                        ptemp = Marshal.SizeOf(person);
+                        tempptr = pPersons;
+
+                        for (int i = 0; i < RetCount; i++)
+                        {
+                            RtlMoveMemory(ref person, pPersons, ptemp);
+                            pPersons = pPersons + ptemp;
+                            torsion.Model.UserInfo.BaseInfo uibi = new torsion.Model.UserInfo.BaseInfo();
+                            uibi.UserCode = person.PersonID;
+                            uibi.Name = Encoding.Default.GetString(person.Name);
+                            if(uibi.Name.IndexOf('\0') >= 0)
+                            uibi.Name = uibi.Name.Substring(0,uibi.Name.IndexOf('\0'));
+                            uibi.Pwd = Encoding.Default.GetString(person.Password);
+                            if (uibi.Pwd.IndexOf('\0') >= 0)
+                                uibi.Pwd = uibi.Pwd.Substring(0, uibi.Pwd.IndexOf('\0'));
+                            uibi.CardNo = person.CardNo.ToString();
+                            uibi.Deptid = person.Dept;
+                            uibi.Groupid = person.Group;
+                            uibi.UserType = person.Other;
+                            uibi.CompareType = person.KQOption;
+                            luibi.Add(uibi);
+                            jmmj.jalr += 1;
+                        }
+                        //modified by wanhaiping
+                        if (tempptr != 0) AnvizNew.CKT_FreeMemory(tempptr);
+                        jmmj.jstat = 1;
+                        jmmj.jdata = Newtonsoft.Json.JsonConvert.SerializeObject(luibi);
+                        luibi.Clear();
+
+                        jmrd.cdata = JsonConvert.SerializeObject(jmmj);
+
+                        //string dir = System.Environment.CurrentDirectory + "\\tmp\\0\\";
+                        //Directory.CreateDirectory(dir);
+                        //using (StreamWriter sw = new StreamWriter(dir + fileint.ToString()+".tmp"))
+                        //{
+                        //    sw.Write(jmrd.cdata);
+                        //}
+                        //fileint++;
+                        rjmrd = SendData(jmrd);
+
+                        this.BeginInvoke(new Update2(Updatecon_2), new object[] { ((jmmj.jalr * 100) / jmmj.jall).ToString() + "%" });
+                        if (ret == 1) break;
+                        //AnvizNew.CKT_FreeMemory(ref ptemp);
+                        //if (tempptr != 0) AnvizNew.CKT_FreeMemory(tempptr);
+                    };
+                    if (ret != 2)
+                    {
+                        break;
+                    }
+
+                }
+                this.BeginInvoke(new Update2(Updatecon_2), new object[] { "Stop getAllPerson:" + jmmj.jalr.ToString() });
+            }
+
+        }
+
+        public void getAllRecord()
+        {
+            torsion.Model.JsonModel.RecData jmrd = new torsion.Model.JsonModel.RecData();
+            torsion.Model.JsonModel.RecData rjmrd = new torsion.Model.JsonModel.RecData();
+            jmrd.cmd = torsion.Model.GlfGloVar.CMD_S_SETALLRECORD;
+
+            int i;
+            int RecordCount = new int();
+            int RetCount = new int();
+            int pClockings = new int();
+            int pLongRun = new int();
+            int pTemprun = new int();
+            int ptemp;
+            int tempptr;
+            int ret;
+            AnvizNew.CLOCKINGRECORD clocking = new AnvizNew.CLOCKINGRECORD();
+            torsion.Model.Attendance.JsonAttendance aja = new torsion.Model.Attendance.JsonAttendance();
+            aja.sendnum = 0;
+
+
+            DeviceUsing.WaitOne();
+            AnvizNew.CKT_RegisterUSB(0, 0);
+            if (AnvizNew.CKT_GetClockingRecordEx(0, ref pLongRun) == 1)
+            {
+
+                pTemprun = pLongRun;
+                while (true)
+                {
+
+                    aja.aai.Clear();
+                    //ret == 2??? wanhaiping
+                    // ret = AnvizNew.CKT_GetClockingRecordProgress(pLongRun, ref RecordCount, ref RetCount, ref pClockings);
+                    ret = AnvizNew.CKT_GetClockingRecordProgress(pTemprun, ref RecordCount, ref RetCount, ref pClockings);
+                    aja.allnum = RecordCount;
+
+                    if (ret != 0)
+                    {
+
+                        ptemp = Marshal.SizeOf(clocking);
+                        tempptr = pClockings;
+                        for (i = 0; i < RetCount; i++)
+                        {
+                            RtlMoveMemory(ref clocking, pClockings, ptemp);
+                            pClockings = pClockings + ptemp;
+
+                            torsion.Model.Attendance.AttendanceInfo taai = new torsion.Model.Attendance.AttendanceInfo();
+                            taai.Userid = clocking.PersonID;
+                            string stime = Encoding.Default.GetString(clocking.Time).TrimEnd('\0');
+                            try
+                            {
+                                taai.CheckTime = Convert.ToDateTime(stime);
+                            }
+                            catch
+                            {
+                                taai.CheckTime = Convert.ToDateTime("2010-01-01 00:00:01");
+                            }
+
+                            taai.CheckType = clocking.Stat;
+                            taai.Sensorid = clocking.ID;
+                            taai.WorkType = clocking.WorkType;
+                            taai.AttFlag = clocking.BackupCode;
+                            taai.OpenDoorFlag = 0;
+                            aja.aai.Add(taai);
+                            //wanhaiping33
+                            aja.sendnum++;
+
+                        }
+                        //modified by wanhaiping
+                        //if (ptemp != 0) AnvizNew.CKT_FreeMemory(ref ptemp);
+                        if (tempptr != 0) AnvizNew.CKT_FreeMemory(tempptr);
+
+                        jmrd.cdata = JsonConvert.SerializeObject(aja);
+                        rjmrd = SendData(jmrd);
+                        if (ret == 1) break;
+                    }
+
+                }
+
+
+            }
+            AnvizNew.CKT_Disconnect();
+            DeviceUsing.ReleaseMutex();
+
+
+        }
         public void ComDevice()
         {
-           
+
             torsion.Model.JsonModel.RecData rjmrd = new torsion.Model.JsonModel.RecData();
-            torsion.Model.JsonModel.RecData sjmrd = new torsion.Model.JsonModel.RecData();
-            string ComDevice_url = post_url + "/DeviceCom/ComDevice" + "?access_token=" + gl_si.assess_token;
+            torsion.Model.JsonModel.RecData jmrd = new torsion.Model.JsonModel.RecData();
+            string ComDevice_url = post_url + "/SoftInfo/ComSoft" + "?access_token=";
             int errcnt = 0;
-            while (errcnt < 10)
+            while (true)
             {
                 try
                 {
-                    if (errcnt > 5)
+                    jmrd.cmd = gl_si.cmd;
+                    if (gl_si.cmd == torsion.Model.GlfGloVar.CMD_HEARTBEAT)
                     {
-                        int ri = ConDevice();
-                        if (ri != torsion.Model.GlfGloVar.RE_SUCCESS)
-                        {
-                            errcnt++;
-                            continue;
-                        }
+                        reDeviceStat();
+                    }
 
-                    }
-                    try
+                    jmrd.cdata = gl_si.sendStr;
+
+                    gl_si.cmd = torsion.Model.GlfGloVar.CMD_HEARTBEAT;
+                    rjmrd = JsonConvert.DeserializeObject<torsion.Model.JsonModel.RecData>(PostWebRequest(ComDevice_url + gl_si.assess_token, JsonConvert.SerializeObject(jmrd), torsion.Model.GlfGloVar.CLIENT_POST_TIMEOUT));
+                    if (rjmrd == null)
                     {
-                        rjmrd = JsonConvert.DeserializeObject<torsion.Model.JsonModel.RecData>(PostWebRequest(ComDevice_url, gl_si.assess_token, torsion.Model.GlfGloVar.CLIENT_POST_TIMEOUT));
-                        sjmrd.stat = 4;
-                        sjmrd.cmd = rjmrd.cmd;
-                    }
-                    catch (Exception e)
-                    {
-                        torsion.Model.GlfGloFun.Write_Err(e.Message,1);
                         errcnt++;
                         continue;
                     }
-                    
-                       
-                  
-                    
+
+                    gl_si.cmd = rjmrd.cmd;
                     switch (rjmrd.cmd)
                     {
                         case torsion.Model.GlfGloVar.CMD_HEARTBEAT:
-
+                            gl_si.cmd = torsion.Model.GlfGloVar.CMD_HEARTBEAT;
                             break;
                         case torsion.Model.GlfGloVar.CMD_NEEDCONNECT:
-                            errcnt = 5;
+                            ConDevice();
+                            break;
+                        case torsion.Model.GlfGloVar.CMD_C_OPENLOCK:
+                            forceOpenLock(rjmrd);
                             continue;
-                        case torsion.Model.GlfGloVar.CMD_DEVICELIST:
-                            gl_ardi = JsonConvert.DeserializeObject<torsion.Model.DeviceInfo[]>(rjmrd.cdata);
-                            this.BeginInvoke(new DEnopar(clearDevice));
-                            this.BeginInvoke(new DEnopar(addDevice));
-                            this.BeginInvoke(new Update2(Updatecon_2), new object[] { "DeviceList Getted" });
-                            break;
-                        case torsion.Model.GlfGloVar.CMD_NEWRECORD:
-                            gl_si.conStat = rjmrd.stat;
-                            //if (AnvizNew.CKT_ClearClockingRecord(smtdl.di.DeviceId, 1, 0) == 0)
-                            //    throw new Exception("Clear Error");
-                            break;
-                        case torsion.Model.GlfGloVar.CMD_OPENLOCK:
-                            forceOpenLock();
-                            this.BeginInvoke(new Update2(Updatecon_2), new object[] { "forceOpenLock:" + rjmrd.cmd });
-                            break;
+                        // break;
+                        case torsion.Model.GlfGloVar.CMD_C_REDEVICESTAT:
+                            reDeviceStat();
+                            continue;
+                        case torsion.Model.GlfGloVar.CMD_C_GETALLRECORD:
+                            gl_si.sendStr = "ok";
+                            new Thread(getAllRecord).Start();
+                            continue;
+                        case torsion.Model.GlfGloVar.CMD_C_GETALLPERSON:
+                            gl_si.sendStr = "start";
+                            gl_si.jmmj = JsonConvert.DeserializeObject<torsion.Model.JsonModel.MulJson>(jmrd.cdata);
+                            new Thread(getAllPerson).Start();
+                            continue;
+                        case torsion.Model.GlfGloVar.CMD_C_SEARCHDEVICE:
+                            SearchDevice();
+                            gl_si.sendStr = Newtonsoft.Json.JsonConvert.SerializeObject(eqsearch);
+                            continue;
+
                         default:
-                            this.BeginInvoke(new Update2(Updatecon_2), new object[] { "UnKnown:" + rjmrd.cmd });
+                            //gl_si.recStr = rjmrd.cdata;
+                            //gl_si.cmd = rjmrd.cmd;
                             break;
                     }
-                    if (rjmrd.stat == 2)
-                    {
-                        rjmrd = SendData(sjmrd);
-                    }
-                    errcnt = 0;
-                    this.BeginInvoke(new _SafeCall(UpLabel2), new object[] {});
-                    
+                    gl_si.cmd = torsion.Model.GlfGloVar.CMD_HEARTBEAT;
+                    this.BeginInvoke(new _SafeCall(UpLabel2), new object[] { });
+
                 }
                 catch (Exception e)
                 {
                     errcnt++;
+                    this.BeginInvoke(new Update2(Updatecon_2), new object[] { e.Message });
                     torsion.Model.GlfGloFun.Write_Err(e.Message);
                 }
                 System.Threading.Thread.Sleep(torsion.Model.GlfGloVar.CLIENT_SLEEP_TIME);
             }
 
-            this.BeginInvoke(new Update2(Updatecon_2), new object[] { "ComDeviceOut"});
         }
 
         public int ConDevice()
         {
 
-            string ConDevice_url = post_url+"/DeviceCom/ConDevice";
+            string ConDevice_url = post_url + "/SoftInfo/ConSoft";
             gl_si.assess_token = PostWebRequest(ConDevice_url, "secretKey");
-            if (torsion.Model.GlfGloVar.ERRSTR_UNREGISTERED == gl_si.assess_token )
+            if (torsion.Model.GlfGloVar.ERRSTR_UNREGISTERED == gl_si.assess_token)
             {
                 return 2;
             }
@@ -1239,19 +1449,8 @@ namespace lfglnet
                 return 3;
             }
 
+            getDeviceList();
             return torsion.Model.GlfGloVar.RE_SUCCESS;
-            //while(true)
-            //{
-            //    try
-            //    {
-
-            //    }
-            //    catch(Exception e)
-            //    {
-                   
-            //    }
-            //    System.Threading.Thread.Sleep(500);
-            //}
         }
 
         private void button8_Click(object sender, EventArgs e)
@@ -1274,23 +1473,136 @@ namespace lfglnet
                 System.Threading.Thread.Sleep(torsion.Model.GlfGloVar.CLIENT_SLEEP_TIME);
             }
         }
-       // CKT_ForceOpenLock
+        // CKT_ForceOpenLock
 
-        public void forceOpenLock()
+        public void getDeviceType(torsion.Model.JsonModel.RecData rjmrd)
         {
             try
             {
+
                 DeviceUsing.WaitOne();
                 AnvizNew.CKT_RegisterUSB(0, 0);
                 AnvizNew.CKT_ForceOpenLock(0);
                 AnvizNew.CKT_Disconnect();
+                gl_si.sendStr = "Success";
                 DeviceUsing.ReleaseMutex();
+                this.BeginInvoke(new Update2(Updatecon_2), new object[] { "forceOpenLock" });
             }
-            catch(Exception e)
+            catch (Exception e)
+            {
+                gl_si.sendStr = e.Message;
+                torsion.Model.GlfGloFun.Write_Err(e.Message);
+            }
+        }
+        public void forceOpenLock(torsion.Model.JsonModel.RecData rjmrd)
+        {
+            try
+            {
+                torsion.Model.JsonModel.MulJson jmmj = Newtonsoft.Json.JsonConvert.DeserializeObject<torsion.Model.JsonModel.MulJson>(rjmrd.cdata);
+                DeviceUsing.WaitOne();
+                AnvizNew.CKT_RegisterUSB(0, 0);
+                AnvizNew.CKT_ForceOpenLock(0);
+                AnvizNew.CKT_Disconnect();
+                gl_si.sendStr = "Success";
+                DeviceUsing.ReleaseMutex();
+                this.BeginInvoke(new Update2(Updatecon_2), new object[] { "forceOpenLock" });
+            }
+            catch (Exception e)
+            {
+                gl_si.sendStr = e.Message;
+                torsion.Model.GlfGloFun.Write_Err(e.Message);
+            }
+
+        }
+        public void reDeviceStat()
+        {
+            try
+            {
+                List<torsion.Model.DeviceInfo> cs = new List<torsion.Model.DeviceInfo>();
+
+                foreach (SoftModel.TDeviceList smtdl in gl_lst)
+                {
+                    torsion.Model.DeviceInfo tdi = new torsion.Model.DeviceInfo();
+                    tdi.deviceSet = smtdl.di.deviceSet;
+                    tdi.conStat = smtdl.di.conStat;
+                    cs.Add(tdi);
+                }
+                gl_si.sendStr = JsonConvert.SerializeObject(cs);
+            }
+            catch (Exception e)
             {
                 torsion.Model.GlfGloFun.Write_Err(e.Message);
             }
-            
+
+        }
+        public void getDeviceList()
+        {
+            torsion.Model.JsonModel.RecData jmrd = new torsion.Model.JsonModel.RecData();
+            torsion.Model.JsonModel.RecData rjmrd = new torsion.Model.JsonModel.RecData();
+            jmrd.cmd = torsion.Model.GlfGloVar.CMD_S_DEVICELIST;
+            try
+            {
+                rjmrd = SendData(jmrd);
+                if (gl_si.di == null) gl_si.di = new List<torsion.Model.DeviceInfo>();
+                gl_si.di = JsonConvert.DeserializeObject<List<torsion.Model.DeviceInfo>>(rjmrd.cdata);
+                this.BeginInvoke(new DEnopar(clearDevice));
+                this.BeginInvoke(new DEnopar(addDevice));
+            }
+            catch (Exception e)
+            {
+                torsion.Model.GlfGloFun.Write_Err(e.Message);
+            }
+
+        }
+
+        public void ChangeConStat(SoftModel.TDeviceList tdl, int stat = 1)
+        {
+            tdl.tb.eqstate = stat;
+            if (tdl.di.conStat == null)
+                tdl.di.conStat = new torsion.Model.DeviceInfo.ConStat();
+            tdl.di.conStat.Stat = stat;
+            tdl.di.conStat.LstTime = DateTime.Now.ToString(torsion.Model.GlfGloVar.DATATIME_FORMAT);
+        }
+        public void EQcmd()
+        {
+            int ret = 0;
+
+            while (true)
+            {
+                try
+                {
+                    foreach (SoftModel.TDeviceList smtdl in gl_lst)
+                    {
+
+                        DeviceUsing.WaitOne();
+                        ret = 0;
+                        switch (smtdl.di.deviceSet.LinkMode)
+                        {
+                            case 2:
+                                break;
+                            case 3:
+                                ret = AnvizNew.CKT_RegisterUSB(smtdl.di.deviceSet.DeviceId, 0);
+
+                                break;
+                            case 4:
+                                break;
+                            default:
+                                ret = AnvizNew.CKT_RegisterNet(smtdl.di.deviceSet.DeviceId, smtdl.di.deviceSet.IP);
+                                break;
+                        }
+                        ChangeConStat(smtdl, ret);
+                        if (ret == 0)
+                        {
+                            DeviceUsing.ReleaseMutex();
+                            continue;
+                        };
+                    }
+                }
+                catch
+                {
+                }
+                Thread.Sleep(10000);
+            }
         }
         public void readNewRecord()
         {
@@ -1300,38 +1612,40 @@ namespace lfglnet
             int RetCount = new int();
             int pClockings = new int();
             int pTemprun = new int();
+            int ret = 0;
+
             while (true)
             {
                 try
                 {
                     foreach (SoftModel.TDeviceList smtdl in gl_lst)
                     {
-                        int ret = 0;
+
                         DeviceUsing.WaitOne();
+                        ret = 0;
                         switch (smtdl.di.deviceSet.LinkMode)
                         {
+                            case 2:
+                                break;
                             case 3:
-                                ret = AnvizNew.CKT_RegisterUSB(smtdl.di.DeviceId, 0);
+                                ret = AnvizNew.CKT_RegisterUSB(smtdl.di.deviceSet.DeviceId, 0);
 
                                 break;
                             case 4:
                                 break;
                             default:
+                                ret = AnvizNew.CKT_RegisterNet(smtdl.di.deviceSet.DeviceId, smtdl.di.deviceSet.IP);
                                 break;
                         }
+                        ChangeConStat(smtdl, ret);
                         if (ret == 0)
                         {
                             DeviceUsing.ReleaseMutex();
-                            smtdl.tb.eqstate = 0;
                             continue;
-                        }
-                        else
-                        {
-                            smtdl.tb.eqstate = 1;
-                        }
+                        };
                         try
                         {
-                            if (AnvizNew.CKT_GetClockingNewRecordEx(smtdl.di.DeviceId, ref pLongRun) == 1)
+                            if (AnvizNew.CKT_GetClockingNewRecordEx(smtdl.di.deviceSet.DeviceId, ref pLongRun) == 1)
                             {
                                 int recnum = 0;
                                 pTemprun = pLongRun;
@@ -1341,30 +1655,31 @@ namespace lfglnet
                                     ret = AnvizNew.CKT_GetClockingRecordProgress(pTemprun, ref RecordCount, ref RetCount, ref pClockings);// pClockings);
                                     if (ret != 0)
                                     {
-                                        torsion.Model.Attendance.AttendanceInfo[] aai;
+                                        List<torsion.Model.Attendance.AttendanceInfo> aai = new List<torsion.Model.Attendance.AttendanceInfo>();
                                         if (RetCount > 0)
                                         {
-                                            aai = new torsion.Model.Attendance.AttendanceInfo[RetCount];
                                             for (int i = 0; i < RetCount; i++)
                                             {
+
                                                 recnum++;
                                                 RtlMoveMemory(ref ta, pClockings, Marshal.SizeOf(ta));
                                                 pClockings = pClockings + Marshal.SizeOf(ta);
 
-                                                aai[i] = new torsion.Model.Attendance.AttendanceInfo();
-                                                aai[i].Userid = ta.PersonID;
-                                                aai[i].CheckTime = Convert.ToDateTime(Encoding.Default.GetString(ta.Time).TrimEnd('\0'));
-                                                aai[i].CheckType = ta.Stat;
-                                                aai[i].Sensorid = ta.ID;
-                                                aai[i].WorkType = ta.WorkType;
-                                                aai[i].AttFlag = ta.BackupCode;
-                                                aai[i].OpenDoorFlag = 0;
+                                                torsion.Model.Attendance.AttendanceInfo taai = new torsion.Model.Attendance.AttendanceInfo();
+                                                taai.Userid = ta.PersonID;
+                                                taai.CheckTime = Convert.ToDateTime(Encoding.Default.GetString(ta.Time).TrimEnd('\0'));
+                                                taai.CheckType = ta.Stat;
+                                                taai.Sensorid = ta.ID;
+                                                taai.WorkType = ta.WorkType;
+                                                taai.AttFlag = ta.BackupCode;
+                                                taai.OpenDoorFlag = 0;
+                                                aai.Add(taai);
 
                                             }
                                             AnvizNew.CKT_FreeMemory(pClockings);
                                             torsion.Model.JsonModel.RecData rjmrd = new torsion.Model.JsonModel.RecData();
                                             torsion.Model.JsonModel.RecData sjmrd = new torsion.Model.JsonModel.RecData();
-                                            sjmrd.cmd = torsion.Model.GlfGloVar.CMD_NEWRECORD;
+                                            sjmrd.cmd = torsion.Model.GlfGloVar.CMD_S_NEWRECORD;
                                             torsion.Model.Attendance.JsonAttendance aja = new torsion.Model.Attendance.JsonAttendance();
                                             aja.allnum = RetCount;
                                             aja.sendnum = RetCount;
@@ -1374,9 +1689,9 @@ namespace lfglnet
                                             if (rjmrd.stat == 4)
                                             {
 
-                                                if (AnvizNew.CKT_ClearClockingRecord(smtdl.di.DeviceId, 1, 0) == 0)
+                                                if (AnvizNew.CKT_ClearClockingRecord(smtdl.di.deviceSet.DeviceId, 1, 0) == 0)
                                                     throw new Exception("Clear Error");
-                                                this.BeginInvoke(new Update2(Updatecon_2), new object[] { smtdl.di.deviceSet.DeviceName + ":" + recnum + " new record" });
+                                                this.BeginInvoke(new Update2(Updatecon_2), new object[] { smtdl.di.deviceSet.DeviceName + ":" + recnum + " new record" + Environment.NewLine + rjmrd.cdata });
                                             }
 
 
@@ -1390,20 +1705,20 @@ namespace lfglnet
                         }
                         catch (Exception e)
                         {
-                            
-                            torsion.Model.GlfGloFun.Write_Err(e.Message,2);
+
+                            torsion.Model.GlfGloFun.Write_Err(e.Message, 2);
                         }
                         AnvizNew.CKT_Disconnect();
                         DeviceUsing.ReleaseMutex();
-                        
+
 
 
                     }
-                   
+
                 }
                 catch (Exception ex)
                 {
-                    torsion.Model.GlfGloFun.Write_Err(ex.Message,1);
+                    torsion.Model.GlfGloFun.Write_Err(ex.Message, 1);
 
                 }
                 Thread.Sleep(10000);
@@ -1531,14 +1846,132 @@ namespace lfglnet
 
         private void button9_Click(object sender, EventArgs e)
         {
-            torsion.Model.JsonModel.RecData jmrd = new torsion.Model.JsonModel.RecData();
-            jmrd.cmd = torsion.Model.GlfGloVar.CMD_DEVICELIST;
-            SendData(jmrd);
+            getDeviceList();
+            //torsion.Model.JsonModel.RecData jmrd = new torsion.Model.JsonModel.RecData();
+            //jmrd.cmd = torsion.Model.GlfGloVar.CMD_DEVICELIST;
+            //SendData(jmrd);
         }
 
         private void button10_Click(object sender, EventArgs e)
         {
-            forceOpenLock();
+            //torsion.Model.JsonModel.RecData jmrd = new torsion.Model.JsonModel.RecData();
+            //getAllRecord(jmrd);
+            getAllRecord();
+
+            //forceOpenLock();
+        }
+
+
+        private void SearchDevice()
+        {
+
+            Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            //255.255.255.255 
+            IPEndPoint iep1 = new IPEndPoint(IPAddress.Broadcast, 5050);
+            string hostname = Dns.GetHostName();
+            byte[] data = new byte[10];
+            data[0] = 0xA5;
+            data[1] = 0x00;
+            data[2] = 0x00;
+            data[3] = 0x00;
+            data[4] = 0x00;
+            data[5] = 0x02;
+            data[6] = 0x00;
+            data[7] = 0x00;
+            data[8] = 0x47;
+            data[9] = 0x23;
+            EndPoint remoteIP = new IPEndPoint(IPAddress.Any, 5060);
+            sock.Bind(remoteIP);
+            sock.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Broadcast, 1);
+            sock.SendTo(data, iep1);
+            // sock.SendTo(data, iep2);
+            byte[] bdata = new byte[1024];
+            EndPoint bremoteIP = new IPEndPoint(IPAddress.Any, 0);
+
+            eqsearch.Clear();
+            while (true)
+            {
+                int recv = 0;
+                string stringData = "";
+                sock.ReceiveTimeout = 1000;
+                try
+                {
+                    recv = sock.ReceiveFrom(bdata, ref bremoteIP);
+                }
+                catch
+                {
+                    break;
+                }
+
+                for (int i = 0; i < recv; i++)
+                {
+                    stringData += Convert.ToString(bdata[i], 16) + " ";
+                }
+                if (recv < 11) continue;
+                if (bdata[5] != 0x82) continue;
+                torsion.Model.DeviceInfo.DeviceSearch dd = new torsion.Model.DeviceInfo.DeviceSearch();
+                dd.DeviceNum = hextoint(bdata, 1, 4);
+                dd.DeviceType = hextostr(bdata, 9, 10);
+                dd.DeviceSerial = hextostr(bdata, 19, 16);
+                dd.IP = hextostr(bdata, 35, 4, 1);
+                dd.SubMask = hextostr(bdata, 39, 4, 1);
+                dd.Geteway = hextostr(bdata, 43, 4, 1);
+                dd.MAC = hextostr(bdata, 47, 6, 2);
+                dd.ServerIP = hextostr(bdata, 53, 4, 1);
+                dd.Port = hextoint(bdata, 57, 2);
+                dd.WorkMode = bdata[59];
+                dd.SysVersion = hextostr(bdata, 60, 8);
+                dd.Keep = hextoint(bdata, 68, 2);
+                eqsearch.Add(dd);
+                this.BeginInvoke(new Update2(Updatecon_2), new object[] { stringData + Environment.NewLine });
+            }
+
+            sock.Close();
+        }
+
+        public string hextostr(byte[] da, int start, int len, int btype = 0)
+        {
+            string restr = "";
+            switch (btype)
+            {
+                case 1:
+                    for (int i = 0; i < len; i++)
+                    {
+                        if (restr != "") restr += ".";
+                        restr += da[i + start].ToString();
+
+                    }
+                    break;
+                case 2:
+                    for (int i = 0; i < len; i++)
+                    {
+                        if (restr != "") restr += "-";
+
+                        restr += String.Format("{0:X2}", da[i + start]);
+                    }
+                    break;
+                default:
+                    restr = System.Text.Encoding.Default.GetString(da, start, len);
+                    break;
+            }
+            return restr.TrimEnd('\0');
+        }
+
+        public int hextoint(byte[] da, int start, int len)
+        {
+            int ri = 0;
+
+            for (int i = 0; i < len; i++)
+            {
+                ri += da[i + start] << ((len - 1 - i) * 8);
+            }
+            return ri;
+        }
+
+        private void button11_Click(object sender, EventArgs e)
+        {
+            SearchDevice();
+            //  new Thread(StartListener).Start();
         }
 
 

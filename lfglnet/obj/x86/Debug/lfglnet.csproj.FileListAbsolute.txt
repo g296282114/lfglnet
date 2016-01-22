@@ -53,3 +53,15 @@ E:\GitHub\lfglnet\lfglnet\obj\x86\Debug\lfglnet.csproj.GenerateResource.Cache
 E:\GitHub\lfglnet\lfglnet\bin\Debug\torsion.Model.dll
 E:\GitHub\lfglnet\lfglnet\bin\Debug\torsion.Model.pdb
 E:\GitHub\lfglnet\lfglnet\obj\x86\Debug\lfglnet.csprojResolveAssemblyReference.cache
+C:\Users\Tosion\Desktop\lfglnet\lfglnet\obj\x86\Debug\lfglnet.exe
+C:\Users\Tosion\Desktop\lfglnet\lfglnet\obj\x86\Debug\lfglnet.pdb
+C:\Users\Tosion\Desktop\lfglnet\lfglnet\bin\Debug\lfglnet.exe
+C:\Users\Tosion\Desktop\lfglnet\lfglnet\bin\Debug\lfglnet.pdb
+C:\Users\Tosion\Desktop\lfglnet\lfglnet\bin\Debug\torsion.Model.pdb
+C:\Users\Tosion\Desktop\lfglnet\lfglnet\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Users\Tosion\Desktop\lfglnet\lfglnet\obj\x86\Debug\lfglnet.Form1.resources
+C:\Users\Tosion\Desktop\lfglnet\lfglnet\obj\x86\Debug\lfglnet.Form_mb.resources
+C:\Users\Tosion\Desktop\lfglnet\lfglnet\obj\x86\Debug\lfglnet.Form3.resources
+C:\Users\Tosion\Desktop\lfglnet\lfglnet\obj\x86\Debug\lfglnet.Properties.Resources.resources
+C:\Users\Tosion\Desktop\lfglnet\lfglnet\obj\x86\Debug\GenerateResource.read.1.tlog
+C:\Users\Tosion\Desktop\lfglnet\lfglnet\obj\x86\Debug\GenerateResource.write.1.tlog

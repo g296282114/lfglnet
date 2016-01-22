@@ -245,7 +245,8 @@ namespace lfglnet
         [DllImport("tc400.dll")]
         public static extern int CKT_FreeMemory(int address);
 
-
+        [DllImport("tc400.dll")]
+        public static extern int CKT_RegisterNetWithPort(int Sno,int port, String Addr);
         [DllImport("tc400.dll")]
         public static extern int CKT_RegisterSno(int Sno, int ComPort);
 

@@ -68,7 +68,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="torsion.Model, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\torsion\torsion\bin\torsion.Model.dll</HintPath>
+      <HintPath>..\..\web\torsion\Model\bin\Debug\torsion.Model.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
